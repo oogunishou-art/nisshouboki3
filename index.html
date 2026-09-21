@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a5276">
+<title>日商簿記3級 学習アプリ</title>
+<style>
+
+:root{--bg:#f5f7fa;--fg:#1a1a2e;--card:#fff;--card2:#f0f4f8;--pri:#1a5276;--pri2:#2980b9;
+--acc:#e74c3c;--acc2:#27ae60;--bdr:#dce1e8;--dim:#7f8c9a;--shadow:0 2px 8px rgba(0,0,0,.08);
+--radius:10px;--font-sz:16px;--dr-col:#1a5276;--cr-col:#c0392b;
+--safe-bot:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);
+--nav-h:64px;--t-border:#b0bec5}
+.dark{--bg:#0f1923;--fg:#e8ecf1;--card:#1a2633;--card2:#243447;--pri:#5dade2;--pri2:#85c1e9;
+--acc:#e74c3c;--acc2:#2ecc71;--bdr:#2c3e50;--dim:#a0a8b0;--shadow:0 2px 8px rgba(0,0,0,.3);
+--dr-col:#5dade2;--cr-col:#e74c3c;--t-border:#455a64}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{overscroll-behavior:none}
+body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:var(--font-sz);
+background:var(--bg);color:var(--fg);min-height:100vh;
+padding-bottom:calc(var(--nav-h) + var(--safe-bot) + 20px);
+padding-top:var(--safe-top);transition:background .3s,color .3s}
+.hide{display:none!important}
+.hd{background:var(--pri);color:#fff;padding:10px 14px;position:sticky;top:0;z-index:100;
+display:flex;align-items:center;gap:8px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.hd h1{font-size:1em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd button{background:none;border:none;color:#fff;font-size:1.2em;cursor:pointer;padding:4px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bdr);
+display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.1);
+padding-bottom:calc(var(--safe-bot) + 8px);padding-top:6px}
+.nav button{flex:1;padding:4px 0;border:none;background:none;color:var(--dim);
+font-size:.6em;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.2s}
+.nav button.act{color:var(--pri);font-weight:700}
+.nav button .ni{font-size:1.5em;line-height:1}
+.tab{padding:10px 12px;display:none}.tab.act{display:block}
+.crd{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:10px;
+box-shadow:var(--shadow);border:1px solid var(--bdr)}
+.crd h3{font-size:.9em;margin-bottom:6px;color:var(--pri)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:10px 18px;
+border-radius:8px;border:none;font-size:.85em;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+.btn-pri{background:var(--pri);color:#fff}.btn-pri:hover{background:var(--pri2)}
+.btn-ok{background:var(--acc2);color:#fff}.btn-ng{background:var(--acc);color:#fff}
+.btn-out{background:transparent;border:2px solid var(--pri);color:var(--pri)}
+.btn-sm{padding:6px 12px;font-size:.78em}
+.btn-block{width:100%;margin-top:6px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mode-btn{background:var(--card);border:2px solid var(--bdr);border-radius:var(--radius);
+padding:12px 8px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.mode-btn:hover,.mode-btn.act{border-color:var(--pri);background:var(--card2)}
+.mode-btn .ico{font-size:1.4em}.mode-btn .lbl{font-size:.78em;font-weight:600}
+.mode-btn .sub{font-size:.62em;color:var(--dim);margin-top:2px}
+.mode-btn .resume-badge{position:absolute;top:4px;right:4px;background:var(--acc);color:#fff;
+font-size:.55em;padding:2px 6px;border-radius:10px;font-weight:700}
+.ch-filter{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
+.ch-tag{padding:3px 8px;border-radius:16px;font-size:.7em;border:1px solid var(--bdr);
+cursor:pointer;background:var(--card);transition:.2s}
+.ch-tag.act{background:var(--pri);color:#fff;border-color:var(--pri)}
+.prog{height:5px;background:var(--bdr);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--acc2);border-radius:3px;transition:width .3s}
+.acc{margin-bottom:6px}
+.acc-h{display:flex;align-items:center;gap:6px;padding:10px 12px;background:var(--card);
+border:1px solid var(--bdr);border-radius:var(--radius);cursor:pointer;transition:.2s}
+.acc-h:hover{background:var(--card2)}
+.acc-h .cn{background:var(--pri);color:#fff;padding:2px 8px;border-radius:14px;font-size:.68em;font-weight:700;white-space:nowrap}
+.acc-h .ct{flex:1;font-size:.82em;font-weight:600}
+.acc-h .cb{font-size:.65em;color:var(--dim)}
+.acc-h .ar{transition:transform .3s;font-size:.7em}
+.acc.open .ar{transform:rotate(90deg)}
+.acc-b{display:none;padding:10px 12px;border:1px solid var(--bdr);border-top:none;
+border-radius:0 0 var(--radius) var(--radius);background:var(--card);line-height:1.65;font-size:.84em}
+.acc.open .acc-b{display:block}
+.acc-b ul{margin:6px 0 6px 16px}.acc-b li{margin:3px 0}
+.acc-b b{color:var(--pri)}
+.acc-b .dr{color:var(--dr-col);font-weight:700}.acc-b .cr{color:var(--cr-col);font-weight:700}
+.chk-row{display:flex;gap:4px;margin:8px 0;align-items:center}
+.chk-btn{width:28px;height:28px;border-radius:50%;border:2px solid var(--bdr);background:var(--card);
+cursor:pointer;font-size:.7em;display:flex;align-items:center;justify-content:center;transition:.2s}
+.chk-btn.done{background:var(--acc2);color:#fff;border-color:var(--acc2)}
+.quiz-area{max-width:600px;margin:0 auto}
+.q-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;padding:8px 10px;background:var(--card2);border-radius:8px}
+.q-num{font-size:.75em;font-weight:600;color:var(--pri)}
+.q-progress-txt{font-size:.7em;color:var(--dim)}
+.q-text{font-size:.88em;line-height:1.6;padding:12px;background:var(--card2);
+border-radius:8px;margin-bottom:12px;border-left:4px solid var(--pri);white-space:pre-wrap}
+.je-section{margin-bottom:10px}
+.je-label{font-size:.78em;font-weight:700;padding:6px 10px;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:center}
+.je-label.dr-label{background:var(--pri);color:#fff}
+.je-label.cr-label{background:var(--acc);color:#fff}
+.je-label .row-ctrl{display:flex;gap:4px}
+.je-label .row-ctrl button{background:rgba(255,255,255,.25);color:#fff;border:none;
+width:24px;height:24px;border-radius:4px;font-size:.9em;cursor:pointer;line-height:1}
+.je-rows{border:1px solid var(--bdr);border-radius:0 0 6px 6px;overflow:hidden}
+.je-row{display:flex;gap:6px;padding:8px;border-bottom:1px solid var(--bdr);align-items:center}
+.je-row:last-child{border-bottom:none}
+.je-row select{flex:1;padding:8px 4px;border:1px solid var(--bdr);border-radius:6px;
+font-size:.82em;background:var(--card);color:var(--fg);font-family:inherit;min-width:0}
+.je-row input[type=number]{width:80px;padding:8px 4px;border:1px solid var(--bdr);
+border-radius:6px;font-size:.82em;text-align:right;background:var(--card);color:var(--fg)}
+.je-row input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ans-box{border-radius:8px;padding:12px;margin:10px 0}
+.ans-ok{background:#d5f5e3;border:2px solid var(--acc2)}
+.ans-ng{background:#fadbd8;border:2px solid var(--acc)}
+.dark .ans-ok{background:#1a3a2a}.dark .ans-ng{background:#3a1a1a}
+.je-display{font-size:.85em;margin:6px 0;padding:8px;background:var(--card2);border-radius:6px}
+.je-display table{width:100%;border-collapse:collapse}
+.je-display td{padding:3px 6px;vertical-align:top}
+.je-display .dr-side{border-right:2px solid var(--bdr);width:50%}
+.exp-box{font-size:.82em;color:var(--fg);margin-top:6px;padding:8px;background:var(--card2);border-radius:6px;line-height:1.5;white-space:pre-wrap}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.stat-box{background:var(--card);border-radius:var(--radius);padding:12px;text-align:center;border:1px solid var(--bdr)}
+.stat-box .num{font-size:1.6em;font-weight:700;color:var(--pri)}
+.stat-box .lbl{font-size:.65em;color:var(--dim);margin-top:2px}
+.acct-cat{margin-bottom:12px}
+.acct-cat h4{font-size:.82em;padding:6px 10px;border-radius:6px;margin-bottom:4px}
+.acct-cat.c-asset h4{background:#d4efdf;color:#1e8449}
+.acct-cat.c-liab h4{background:#fadbd8;color:#c0392b}
+.acct-cat.c-eq h4{background:#d6eaf8;color:#2471a3}
+.acct-cat.c-rev h4{background:#fdebd0;color:#d68910}
+.acct-cat.c-exp h4{background:#e8daef;color:#7d3c98}
+.dark .acct-cat.c-asset h4{background:#1a3a2a;color:#2ecc71}
+.dark .acct-cat.c-liab h4{background:#3a1a1a;color:#e74c3c}
+.dark .acct-cat.c-eq h4{background:#1a2a3a;color:#5dade2}
+.dark .acct-cat.c-rev h4{background:#3a2a1a;color:#f39c12}
+.dark .acct-cat.c-exp h4{background:#2a1a3a;color:#bb8fce}
+.acct-item{display:flex;justify-content:space-between;padding:5px 10px;font-size:.8em;border-bottom:1px solid var(--bdr)}
+.acct-item:last-child{border:none}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.setting-row:last-child{border:none}
+.toggle{width:44px;height:24px;background:var(--bdr);border-radius:12px;position:relative;cursor:pointer;transition:.3s}
+.toggle.on{background:var(--acc2)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.3s}
+.toggle.on::after{left:22px}
+.memo-area{width:100%;min-height:60px;padding:8px;border:1px solid var(--bdr);border-radius:6px;
+font-family:inherit;font-size:.82em;resize:vertical;background:var(--card);color:var(--fg)}
+.ch-drill{cursor:pointer;transition:.2s}.ch-drill:hover{background:var(--card2)}
+.ptn-card{margin-bottom:10px;padding:12px;background:var(--card);border-radius:var(--radius);border:1px solid var(--bdr)}
+.ptn-card h4{font-size:.85em;color:var(--pri);margin-bottom:6px}
+.ptn-je{font-size:.8em;background:var(--card2);padding:6px;border-radius:4px;margin:3px 0;line-height:1.4}
+.q-pick-list{max-height:400px;overflow:auto;margin-top:8px}
+.q-pick-item{padding:8px 10px;border-bottom:1px solid var(--bdr);cursor:pointer;font-size:.8em;display:flex;align-items:center;gap:8px}
+.q-pick-item:hover{background:var(--card2)}
+.q-pick-item .status-icon{font-size:.9em;flex-shrink:0}
+.q-pick-item .stat-txt{font-size:.7em;color:var(--dim);margin-left:auto}
+.q-pick-item.type-ws{background:linear-gradient(90deg,var(--card),var(--card2))}
+.ws-table{border-collapse:collapse;width:100%;font-size:.85em;margin:8px 0}
+.ws-table th,.ws-table td{border:1px solid var(--bdr);padding:6px 8px;text-align:left}
+.ws-table th{background:var(--card2);font-weight:600}
+.ws-table .num-col{text-align:right;width:100px}
+.ws-table input.ws-input{width:100%;padding:4px 6px;border:2px solid var(--acc);
+border-radius:4px;text-align:right;font-size:.9em;background:#fffbe6;color:#000;font-weight:700}
+.dark .ws-table input.ws-input{background:#3a3020;color:#fff}
+.ws-table .total-row{background:var(--card2);font-weight:700}
+.ws-side{padding:4px 8px;border-radius:4px;font-size:.7em;display:inline-block}
+.ws-side.side-収益,.ws-side.side-負債,.ws-side.side-純資産{background:#fadbd8;color:#c0392b}
+.ws-side.side-費用,.ws-side.side-資産{background:#d4efdf;color:#1e8449}
+.ws-side.side-資産控除{background:#fdebd0;color:#d68910}
+.ws-side.side-計算{background:#d6eaf8;color:#2471a3}
+
+/* === 新規追加: テキスト内仕訳表・T字勘定 === */
+.txt-je{margin:10px 0;border:2px solid var(--t-border);border-radius:6px;overflow:hidden;font-size:.85em}
+.txt-je-title{background:var(--pri);color:#fff;padding:4px 10px;font-size:.78em;font-weight:600}
+.txt-je-body{display:grid;grid-template-columns:1fr 1fr;min-height:36px}
+.txt-je-dr{border-right:2px solid var(--t-border);padding:6px 10px}
+.txt-je-cr{padding:6px 10px}
+.txt-je-dr div,.txt-je-cr div{display:flex;justify-content:space-between;padding:2px 0}
+.txt-je-dr .acct{color:var(--dr-col);font-weight:600}
+.txt-je-cr .acct{color:var(--cr-col);font-weight:600}
+.txt-je-dr .amt,.txt-je-cr .amt{font-weight:700;font-variant-numeric:tabular-nums}
+.txt-je-note{padding:4px 10px;font-size:.75em;color:var(--dim);background:var(--card2);border-top:1px solid var(--bdr)}
+
+.t-acct{margin:10px 0;border:2px solid var(--t-border);border-radius:6px;overflow:hidden;font-size:.82em;max-width:320px}
+.t-acct-title{text-align:center;font-weight:700;padding:4px;background:var(--card2);border-bottom:2px solid var(--t-border)}
+.t-acct-body{display:grid;grid-template-columns:1fr 1fr;min-height:40px}
+.t-acct-dr{border-right:2px solid var(--t-border);padding:4px 8px}
+.t-acct-cr{padding:4px 8px}
+.t-acct-dr div,.t-acct-cr div{display:flex;justify-content:space-between;padding:1px 0;font-size:.9em}
+
+.txt-warn{margin:8px 0;padding:8px 12px;border-left:4px solid var(--acc);background:#fff5f5;border-radius:0 6px 6px 0;font-size:.82em}
+.dark .txt-warn{background:#2a1515}
+.txt-tip{margin:8px 0;padding:8px 12px;border-left:4px solid var(--acc2);background:#f0fff5;border-radius:0 6px 6px 0;font-size:.82em}
+.dark .txt-tip{background:#152a1a}
+.txt-formula{margin:8px 0;padding:10px 14px;background:var(--card2);border:1px solid var(--bdr);border-radius:8px;text-align:center;font-weight:700;font-size:.9em}
+.txt-ex{margin:8px 0;padding:10px 12px;background:var(--card);border:1px dashed var(--bdr);border-radius:8px;font-size:.82em}
+.txt-ex-title{font-weight:700;color:var(--pri);margin-bottom:4px;font-size:.9em}
+
+/* 章別進捗パネル */
+.ch-prog-panel{margin:8px 0;padding:10px;background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius)}
+.ch-prog-panel h4{font-size:.78em;color:var(--pri);margin-bottom:6px}
+.ch-prog-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.72em}
+.ch-prog-row .ch-lbl{width:50px;font-weight:600;color:var(--pri);white-space:nowrap}
+.ch-prog-row .prog{flex:1;height:4px}
+.ch-prog-row .ch-pct{width:35px;text-align:right;color:var(--dim)}
+.ch-prog-row.current{background:var(--card2);border-radius:4px;padding:3px 4px}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeIn .25s ease}
+@media(min-width:600px){.tab{max-width:640px;margin:0 auto}.modes{grid-template-columns:repeat(3,1fr)}}
+
+</style>
+</head>
+<body>
+<div class="hd">
+<button onclick="goBack()" id="backBtn" class="hide">◀</button>
+<h1>📒 日商簿記3級</h1>
+<button onclick="toggleMemo()" title="メモ">📝</button>
+</div>
+<div class="nav">
+<button onclick="switchTab('T-text')" data-tab="T-text" class="act"><span class="ni">📖</span>テキスト</button>
+<button onclick="switchTab('T-quiz')" data-tab="T-quiz"><span class="ni">✏️</span>問題</button>
+<button onclick="switchTab('T-ref')" data-tab="T-ref"><span class="ni">📋</span>科目</button>
+<button onclick="switchTab('T-stats')" data-tab="T-stats"><span class="ni">📊</span>統計</button>
+<button onclick="switchTab('T-more')" data-tab="T-more"><span class="ni">⚙️</span>設定</button>
+</div>
+<div id="memoOL" class="hide" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:end">
+<div style="background:var(--card);width:100%;border-radius:14px 14px 0 0;padding:14px;max-height:80vh;overflow:auto;padding-bottom:calc(14px + var(--safe-bot))">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<h3 style="font-size:.95em">📝 メモ</h3><button class="btn btn-sm btn-out" onclick="toggleMemo()">閉じる</button></div>
+<p style="font-size:.72em;color:var(--dim);margin-bottom:6px">問題のメモをタップで該当問題を開けます</p>
+<textarea class="memo-area" id="memoText" placeholder="自由メモ…" oninput="saveMemo()" style="min-height:80px"></textarea>
+<div id="qMemoList" style="margin-top:10px"></div>
+</div></div>
+
+<div class="tab act" id="T-text">
+<h2 style="font-size:1em;margin-bottom:8px">📖 テキスト学習</h2>
+<div id="textSec"></div>
+</div>
+
+<div class="tab" id="T-quiz">
+<div id="qMenu">
+<h2 style="font-size:1em;margin-bottom:8px">✏️ 問題演習</h2>
+<div id="resumePanel" class="hide"></div>
+<div class="ch-filter" id="chF"></div>
+<div class="modes" id="mGrid"></div>
+<div class="crd" style="margin-top:10px"><h3>📝 問題を選んで解く</h3>
+<p style="font-size:.75em;color:var(--dim);margin-bottom:6px">章を選んで、好きな問題から解けます</p>
+<select id="pickChSel" onchange="renderPickList()" style="width:100%;padding:8px;border:1px solid var(--bdr);border-radius:6px;background:var(--card);color:var(--fg);font-family:inherit;font-size:.85em">
+<option value="0">全ての章</option>
+</select>
+<div id="pickList" class="q-pick-list"></div>
+</div>
+</div>
+<div id="qPlay" class="hide quiz-area"></div>
+</div>
+
+<div class="tab" id="T-ref">
+<h2 style="font-size:1em;margin-bottom:8px">📋 勘定科目リファレンス</h2>
+<div id="acctRef"></div>
+<h2 style="font-size:1em;margin:16px 0 8px">🔄 仕訳パターン集</h2>
+<div id="ptnRef"></div>
+</div>
+
+<div class="tab" id="T-stats">
+<h2 style="font-size:1em;margin-bottom:8px">📊 学習統計</h2>
+<div class="stat-grid" id="sGrid"></div>
+<div class="crd"><h3>📅 学習カレンダー</h3><div id="calG" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:6px"></div></div>
+<div class="crd"><h3>🎯 苦手問題ランキング</h3><div id="weakRank"></div></div>
+<div class="crd"><h3>📝 章別進捗（タップで詳細）</h3><div id="chProg"></div></div>
+<div id="chDetail" class="hide crd"></div>
+</div>
+
+<div class="tab" id="T-more">
+<h2 style="font-size:1em;margin-bottom:8px">⚙️ 設定・その他</h2>
+<div class="crd"><h3>🔧 表示設定</h3>
+<div class="setting-row"><span>ダークモード</span><div class="toggle" id="dkT" onclick="toggleDark()"></div></div>
+<div class="setting-row"><span>フォントサイズ</span>
+<select onchange="setFS(this.value)" id="fsS" style="padding:4px;border:1px solid var(--bdr);border-radius:4px">
+<option value="14px">小</option><option value="16px" selected>中</option><option value="18px">大</option><option value="20px">特大</option></select></div>
+<div class="setting-row"><span>音声読み上げ</span><div class="toggle" id="ttsT" onclick="toggleTTS()"></div></div>
+</div>
+<div class="crd"><h3>🎯 目標設定</h3>
+<div class="setting-row"><span>1日の目標問題数</span><input type="number" id="gC" value="10" min="1" max="100" style="width:55px;padding:4px;border:1px solid var(--bdr);border-radius:4px;text-align:center" onchange="saveGoal()"></div>
+<div class="setting-row"><span>目標正答率</span><input type="number" id="gR" value="80" min="1" max="100" style="width:55px;padding:4px;border:1px solid var(--bdr);border-radius:4px;text-align:center" onchange="saveGoal()">%</div>
+</div>
+<div class="crd"><h3>💾 データ管理</h3>
+<button class="btn btn-out btn-block" onclick="exportD()">📤 データ書き出し</button>
+<button class="btn btn-out btn-block" onclick="document.getElementById('impF').click()">📥 データ読み込み</button>
+<input type="file" id="impF" class="hide" accept=".json" onchange="importD(event)">
+<button class="btn btn-ng btn-block" onclick="resetD()" style="margin-top:12px">🗑️ データリセット</button></div>
+</div>
+<script>
+
+/* ======== テキスト内仕訳表ヘルパー ======== */
+function jeHTML(title, entries, note){
+  let dr=[],cr=[];
+  entries.forEach(e=>{if(e[0])dr.push(e);if(e[2])cr.push(e)});
+  let h='<div class="txt-je">';
+  if(title) h+='<div class="txt-je-title">'+title+'</div>';
+  h+='<div class="txt-je-body"><div class="txt-je-dr">';
+  dr.forEach(e=>{h+='<div><span class="acct">（'+e[0]+'）</span><span class="amt">'+e[1].toLocaleString()+'</span></div>'});
+  h+='</div><div class="txt-je-cr">';
+  cr.forEach(e=>{h+='<div><span class="acct">（'+e[2]+'）</span><span class="amt">'+e[3].toLocaleString()+'</span></div>'});
+  h+='</div></div>';
+  if(note) h+='<div class="txt-je-note">💡 '+note+'</div>';
+  return h+'</div>';
+}
+function tAcctHTML(title, drItems, crItems){
+  let h='<div class="t-acct"><div class="t-acct-title">'+title+'</div><div class="t-acct-body"><div class="t-acct-dr">';
+  drItems.forEach(e=>{h+='<div><span>'+e[0]+'</span><span>'+e[1].toLocaleString()+'</span></div>'});
+  h+='</div><div class="t-acct-cr">';
+  crItems.forEach(e=>{h+='<div><span>'+e[0]+'</span><span>'+e[1].toLocaleString()+'</span></div>'});
+  return h+'</div></div></div>';
+}
+
+const CHAPTERS=[
+{n:1,t:"簿記の基礎",sec:"基礎編",cases:"1-2",text:`
+<b>■ 簿記とは何か</b>
+簿記とは、会社の日々の経済活動（取引）を<b>一定のルール</b>にしたがって帳簿に記入し、一定期間ごとに<b>損益計算書</b>（もうけを計算する表）と<b>貸借対照表</b>（財産の状態を示す表）を作成する技術です。
+
+<div class="txt-tip">💡 <b>簿記の最終目標</b>：「いくら儲かったか？」（損益計算書）と「いま財産はどれだけあるか？」（貸借対照表）を正確に報告すること。</div>
+
+<b>■ 5つの取引要素</b>
+すべての取引は、次の5つの要素に分類されます：
+
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:8px 0;text-align:center;font-size:.8em">
+<div style="background:#d4efdf;padding:6px;border-radius:4px"><b>資産</b><br>持っているもの<br><span style="font-size:.75em">現金、建物等</span></div>
+<div style="background:#fadbd8;padding:6px;border-radius:4px"><b>負債</b><br>借りているもの<br><span style="font-size:.75em">借入金等</span></div>
+<div style="background:#d6eaf8;padding:6px;border-radius:4px"><b>純資産</b><br>自分のもの<br><span style="font-size:.75em">資本金等</span></div>
+<div style="background:#fdebd0;padding:6px;border-radius:4px"><b>収益</b><br>もうけの原因<br><span style="font-size:.75em">売上等</span></div>
+<div style="background:#e8daef;padding:6px;border-radius:4px"><b>費用</b><br>もうけを減らす<br><span style="font-size:.75em">仕入等</span></div>
+</div>
+
+<b>■ 仕訳のルール（超重要！）</b>
+取引を「<span class="dr">借方（左側）</span>」と「<span class="cr">貸方（右側）</span>」に分けて記録します。
+
+<div style="margin:8px 0;padding:10px;background:var(--card2);border-radius:8px;font-size:.85em">
+<div style="margin-bottom:6px"><b>🔵 借方（左）に書くもの：</b></div>
+・<b>資産</b>の<u>増加</u>　・<b>負債</b>の<u>減少</u>　・<b>純資産</b>の<u>減少</u>
+・<b>費用</b>の<u>発生</u>　・<b>収益</b>の<u>減少</u>（取消）
+<div style="margin:6px 0"><b>🔴 貸方（右）に書くもの：</b></div>
+・<b>資産</b>の<u>減少</u>　・<b>負債</b>の<u>増加</u>　・<b>純資産</b>の<u>増加</u>
+・<b>収益</b>の<u>発生</u>　・<b>費用</b>の<u>減少</u>（取消）
+</div>
+
+<div class="txt-formula">借方の合計金額 ＝ 貸方の合計金額（必ず一致する！）</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 具体例：現金100円で商品を仕入れた</div>
+考え方：①仕入（費用）が発生 → 借方　②現金（資産）が減少 → 貸方
+`+jeHTML("仕入れの仕訳",[["仕入",100,"現金",100]],"費用の発生は借方、資産の減少は貸方")+`
+</div>
+
+<b>■ 勘定科目</b>
+取引を分類するための名称を<b>勘定科目</b>といいます。「現金」「売掛金」「仕入」「売上」などがその例です。
+
+<b>■ 転記</b>
+仕訳帳から総勘定元帳へ、勘定科目ごとに金額を書き写す作業を<b>転記</b>といいます。
+
+<div class="txt-ex"><div class="txt-ex-title">📝 T字勘定での転記イメージ（現金勘定）</div>
+`+tAcctHTML("現 金",[["売上",150],["借入金",600]],[["仕入",100],["給料",500]])+`
+左側（借方）＝現金が増えた取引、右側（貸方）＝現金が減った取引
+</div>
+
+<div class="txt-warn">⚠️ <b>頻出ポイント</b>：仕訳では必ず借方と貸方の金額が一致します。一致しなければどこかに間違いがあります。</div>
+`},
+
+{n:2,t:"商品売買",sec:"仕訳編",cases:"3-10",text:`
+<b>■ 三分法とは</b>
+商品売買を<b>「仕入」（費用）・「売上」（収益）・「繰越商品」（資産）</b>の3つの勘定科目で処理する方法です。3級試験ではこの三分法が基本です。
+
+<div class="txt-tip">💡 商品を買ったとき → <b>仕入</b>（費用）で処理、商品を売ったとき → <b>売上</b>（収益）で処理。商品勘定は使いません。</div>
+
+<b>■ 掛け取引</b>
+代金をあとで支払う（受け取る）取引を<b>掛け取引</b>といいます。
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：商品100円を掛けで仕入れた</div>
+`+jeHTML("掛け仕入れ",[["仕入",100,"買掛金",100]],"仕入（費用↑）→借方、買掛金（負債↑）→貸方")+`
+</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：商品150円を掛けで売り上げた</div>
+`+jeHTML("掛け売上",[["売掛金",150,"売上",150]],"売掛金（資産↑）→借方、売上（収益↑）→貸方")+`
+</div>
+
+<b>■ クレジット売掛金</b>
+クレジットカード払い条件で売り上げたときは<b>クレジット売掛金</b>（資産）で処理します。信販会社への手数料は<b>支払手数料</b>（費用）として<u>販売時に</u>計上します。
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：商品200円をクレジット払いで売上。手数料5%</div>
+手数料 = 200円 × 5% = 10円　→　クレジット売掛金 = 200 - 10 = 190円
+`+jeHTML("クレジット売上",[["クレジット売掛金",190,"売上",200],["支払手数料",10,"",""]],"")+`
+</div>
+
+<b>■ 返品</b>
+仕入れた商品を返品 → <b>仕入れたときの逆仕訳</b>
+売り上げた商品が返品された → <b>売り上げたときの逆仕訳</b>
+
+<b>■ 仕入諸掛り・売上諸掛り</b>
+
+<div style="margin:8px 0;font-size:.85em">
+<div style="padding:6px;background:#d4efdf;border-radius:4px;margin:3px 0"><b>仕入諸掛り（引取運賃など）</b>：当社負担 → 仕入原価に含める（仕入に加算） ／ 先方負担 → 立替金で処理</div>
+<div style="padding:6px;background:#fdebd0;border-radius:4px;margin:3px 0"><b>売上諸掛り（発送費など）</b>：当社負担 → 発送費（費用）で処理 ／ 先方負担 → 売掛金に加算 or 立替金</div>
+</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：商品100円を掛けで仕入れ、当社負担の引取運賃10円を現金で支払った</div>
+`+jeHTML("仕入諸掛り（当社負担）",[["仕入",110,"買掛金",100],["","","現金",10]],"仕入原価 = 商品100 + 運賃10 = 110円")+`
+</div>
+
+<div class="txt-warn">⚠️ <b>頻出ミス</b>：当社負担の引取運賃を「発送費」で処理してしまうパターン。仕入諸掛りの当社負担分は必ず仕入に含めます！</div>
+`},
+
+{n:3,t:"現金",sec:"仕訳編",cases:"11-14",text:`
+<b>■ 簿記上の「現金」</b>
+簿記でいう「現金」は、通貨（紙幣・硬貨）だけではありません。以下のものも<b>現金として処理</b>します：
+
+<div style="margin:8px 0;padding:10px;background:var(--card2);border-radius:8px;font-size:.85em">
+・<b>他人振出小切手</b>（他社が振り出した小切手）
+・郵便為替証書
+・送金小切手
+・配当金領収証
+・期限の到来した公社債の利札
+</div>
+
+<div class="txt-warn">⚠️ <b>超重要</b>：<b>自己振出小切手</b>（自分の会社が振り出した小切手が戻ってきた場合）は<b>当座預金の増加</b>として処理します。現金ではありません！</div>
+
+<b>■ 現金過不足</b>
+帳簿残高と実際有高が一致しないときの処理：
+
+<div style="margin:8px 0;font-size:.85em">
+<div style="padding:8px;background:#fadbd8;border-radius:4px;margin:4px 0">
+<b>帳簿残高 ＞ 実際有高</b>（現金が足りない）<br>
+→ 現金を減らし、<b>現金過不足</b>を借方に記入
+`+jeHTML("",[["現金過不足",20,"現金",20]],"")+`
+</div>
+<div style="padding:8px;background:#d4efdf;border-radius:4px;margin:4px 0">
+<b>帳簿残高 ＜ 実際有高</b>（現金が余分にある）<br>
+→ 現金を増やし、<b>現金過不足</b>を貸方に記入
+`+jeHTML("",[["現金",20,"現金過不足",20]],"")+`
+</div>
+</div>
+
+<b>■ 原因判明時</b> → 現金過不足を正しい勘定科目に振り替え
+<b>■ 決算日まで原因不明のとき</b>：
+<div style="margin:6px 0;font-size:.85em">
+・借方残高（不足）→ <b>雑損</b>（費用）に振り替え
+・貸方残高（超過）→ <b>雑益</b>（収益）に振り替え
+</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 一連の流れ：不足20円 → 通信費10円が原因判明 → 残り10円は決算で雑損</div>
+① 過不足発見時
+`+jeHTML("①過不足発見",[["現金過不足",20,"現金",20]],"")+`
+② 原因判明（通信費の記帳もれ10円）
+`+jeHTML("②原因判明",[["通信費",10,"現金過不足",10]],"")+`
+③ 決算日（残高10円が原因不明）
+`+jeHTML("③決算時",[["雑損",10,"現金過不足",10]],"借方残高は雑損（費用）で処理")+`
+</div>
+`},
+
+{n:4,t:"預金・当座借越",sec:"仕訳編",cases:"15-20",text:`
+<b>■ 預金の種類</b>
+<b>普通預金</b>：一般的な銀行預金。預け入れで増加、引き出しで減少。
+<b>定期預金</b>：一定期間引き出せない預金。利率が高い。
+<b>当座預金</b>：小切手で引き出せる預金。利息はつかない。
+
+<b>■ 小切手の振出し</b>
+小切手を振り出す ＝ <b>当座預金（資産）が減少</b>する。
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：買掛金100円を小切手で支払った</div>
+`+jeHTML("",[["買掛金",100,"当座預金",100]],"小切手振出し → 当座預金の減少")+`
+</div>
+
+<b>■ 当座借越</b>
+当座預金の残高を超えて小切手を振り出すこと。<b>銀行との当座借越契約</b>が必要。
+
+<div class="txt-tip">💡 当座借越契約がある場合、残高を超えても<b>当座預金勘定のまま</b>処理します（マイナス残高になる）。</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：当座預金残高150円、商品200円を仕入れ小切手振出し（借越限度500円）</div>
+`+jeHTML("",[["仕入",200,"当座預金",200]],"残高を超えてもそのまま当座預金で処理")+`
+</div>
+
+<b>■ 決算日の当座借越の処理</b>
+決算日に当座預金が<b>貸方残高</b>（マイナス）の場合 → <b>当座借越（負債）</b>に振り替え
+
+`+jeHTML("決算日の振替",[["当座預金",20,"当座借越",20]],"貸方残高を当座借越（負債）に振替")+`
+翌期首に<b>再振替仕訳</b>を行います（逆仕訳）。
+`},
+
+{n:5,t:"小口現金",sec:"仕訳編",cases:"21-24",text:`
+<b>■ 小口現金とは</b>
+日常の少額支払い（文房具、交通費、お茶代など）のために手許に置いておく少額の現金。
+
+<b>■ 定額資金前渡法（インプレスト・システム）</b>
+
+<div style="margin:8px 0;padding:10px;background:var(--card2);border-radius:8px;font-size:.85em">
+<b>①前渡し</b>：会計係 → 小口現金係に一定額を渡す
+<b>②支払い</b>：小口現金係が日常の少額支払いを行う
+<b>③報告</b>：小口現金係 → 会計係に支払報告
+<b>④補給</b>：会計係が<u>使った分だけ</u>補給（常に一定額に戻す）
+</div>
+
+<div class="txt-tip">💡 <b>仕訳のタイミング</b>：会計係が仕訳をするのは①前渡し時、③支払報告時、④補給時です。②の小口現金係の支払い時には仕訳しません。</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 一連の流れ</div>
+① 前渡し時（小切手500円を振り出して前渡し）
+`+jeHTML("①前渡し",[["小口現金",500,"当座預金",500]],"")+`
+③ 支払報告時（消耗品費100円、雑費200円を報告）
+`+jeHTML("③支払報告",[["消耗品費",100,"小口現金",300],["雑費",200,"",""]],"")+`
+④ 補給時（使った300円分を補給）
+`+jeHTML("④補給",[["小口現金",300,"当座預金",300]],"使った分だけ補給 → 常に500円に戻る")+`
+</div>
+`},
+
+{n:6,t:"手形と電子記録債権(債務)",sec:"仕訳編",cases:"25-29",text:`
+<b>■ 約束手形</b>
+一定の期日に一定の金額を支払うことを約束した証券。
+
+<div style="margin:8px 0;font-size:.85em">
+・<b>振出人</b>（支払う人）→ <b>支払手形（負債）</b>
+・<b>名宛人</b>（受け取る人）→ <b>受取手形（資産）</b>
+</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 約束手形の仕訳</div>
+手形を振り出して仕入れ（100円）
+`+jeHTML("振出し",[["仕入",100,"支払手形",100]],"")+`
+手形を受け取って売上（100円）
+`+jeHTML("受取り",[["受取手形",100,"売上",100]],"")+`
+</div>
+
+<b>■ 電子記録債権・債務</b>
+手形に代わる電子的な決済手段。
+・債権者側：<b>電子記録債権（資産）</b>
+・債務者側：<b>電子記録債務（負債）</b>
+
+<div class="txt-tip">💡 売掛金→電子記録債権、買掛金→電子記録債務の「振替」として処理するのがポイント。</div>
+`},
+
+{n:7,t:"貸付金・借入金",sec:"仕訳編",cases:"30-35",text:`
+<b>■ 貸付金・借入金</b>
+<div style="margin:8px 0;font-size:.85em">
+・貸し付けたとき → <b>貸付金（資産）</b>の増加 ＋ 返済時に<b>受取利息（収益）</b>
+・借り入れたとき → <b>借入金（負債）</b>の増加 ＋ 返済時に<b>支払利息（費用）</b>
+</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：貸付金500円の返済 + 利息10円を現金で受け取った</div>
+`+jeHTML("",[["現金",510,"貸付金",500],["","","受取利息",10]],"")+`
+</div>
+
+<b>■ 手形貸付金・手形借入金</b>
+約束手形を用いた貸し借り。通常の貸付金・借入金と区別する。
+・手形を受け取って貸し付け → <b>手形貸付金（資産）</b>
+・手形を振り出して借り入れ → <b>手形借入金（負債）</b>
+`},
+
+{n:8,t:"その他の債権債務",sec:"仕訳編",cases:"36-53",text:`
+<b>■ 未払金・未収入金</b>
+<div class="txt-warn">⚠️ <b>重要</b>：<u>商品以外</u>のものの未払い → <b>未払金</b>（買掛金ではない）、<u>商品以外</u>のものの未収 → <b>未収入金</b>（売掛金ではない）</div>
+
+<b>■ 前払金・前受金</b>
+・内金を支払った → <b>前払金（資産）</b>
+・内金を受け取った → <b>前受金（負債）</b>
+
+<b>■ 仮払金・仮受金</b>
+内容や金額が未確定のとき一時的に使う勘定。
+・概算前渡し → <b>仮払金（資産）</b> → 確定時に振替
+・内容不明入金 → <b>仮受金（負債）</b> → 判明時に振替
+
+<b>■ 立替金・従業員立替金・預り金</b>
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：給料500円のうち、源泉徴収50円を天引き、立替金40円を差し引き</div>
+`+jeHTML("",[["給料",500,"預り金",50],["","","従業員立替金",40],["","","現金",410]],"天引き後の手取り = 500 - 50 - 40 = 410円")+`
+</div>
+
+<b>■ 受取商品券</b>：自治体等の商品券を受け取った → 受取商品券（資産）
+<b>■ 差入保証金</b>：敷金・保証金を支払った → 差入保証金（資産）
+`},
+
+{n:9,t:"その他の費用",sec:"仕訳編",cases:"54-58",text:`
+<b>■ 各費用の勘定科目</b>
+<div style="margin:8px 0;font-size:.85em;line-height:1.8">
+・コピー用紙、文房具 → <b>消耗品費</b>
+・郵便切手、はがき → <b>通信費</b>
+・収入印紙 → <b>租税公課</b>
+・固定資産税、自動車税 → <b>租税公課</b>
+・社会保険料の会社負担分 → <b>法定福利費</b>
+</div>
+
+<div class="txt-warn">⚠️ <b>頻出ミス</b>：切手は通信費、収入印紙は租税公課。混同注意！</div>
+
+<b>■ 貯蔵品（決算整理）</b>
+決算日に未使用の切手・収入印紙が残っている場合 → <b>貯蔵品（資産）</b>に振替
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：決算日に切手50円分と収入印紙70円分が残っている</div>
+`+jeHTML("決算整理",[["貯蔵品",120,"通信費",50],["","","租税公課",70]],"使い残しは費用→資産に振り替え")+`
+翌期首に<b>再振替仕訳</b>（逆仕訳）を行う
+`+jeHTML("翌期首（再振替）",[["通信費",50,"貯蔵品",120],["租税公課",70,"",""]],"")+`
+</div>
+`},
+
+{n:10,t:"貸倒れと貸倒引当金",sec:"仕訳編",cases:"59-62",text:`
+<b>■ 貸倒れとは</b>
+得意先の倒産等により売掛金や受取手形が回収不能になること。
+
+<b>■ 処理パターン3つを整理</b>
+
+<div style="margin:8px 0">
+<div style="padding:8px;background:#fadbd8;border-radius:6px;margin:4px 0;font-size:.85em">
+<b>パターン①</b> 当期発生の債権が貸倒れ → 全額<b>貸倒損失（費用）</b>
+`+jeHTML("",[["貸倒損失",100,"売掛金",100]],"")+`
+</div>
+
+<div style="padding:8px;background:#d4efdf;border-radius:6px;margin:4px 0;font-size:.85em">
+<b>パターン②</b> 前期以前の債権が貸倒れ → まず<b>貸倒引当金を取崩し</b>、超過分は貸倒損失
+`+jeHTML("（引当金8円、売掛金50円の貸倒れ）",[["貸倒引当金",8,"売掛金",50],["貸倒損失",42,"",""]],"")+`
+</div>
+
+<div style="padding:8px;background:#d6eaf8;border-radius:6px;margin:4px 0;font-size:.85em">
+<b>パターン③</b> 前期に貸倒処理した売掛金を回収 → <b>償却債権取立益（収益）</b>
+`+jeHTML("",[["現金",50,"償却債権取立益",50]],"")+`
+</div>
+</div>
+
+<b>■ 貸倒引当金の設定（差額補充法）</b>
+<div class="txt-formula">設定額 ＝ 期末債権残高 × 貸倒設定率 − 既存の引当金残高</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：売掛金期末残高400円、設定率2%、既存引当金0円</div>
+設定額 = 400 × 2% = 8円
+`+jeHTML("",[["貸倒引当金繰入",8,"貸倒引当金",8]],"")+`
+</div>
+`},
+
+{n:11,t:"有形固定資産と減価償却",sec:"仕訳編",cases:"63-67",text:`
+<b>■ 取得原価の計算</b>
+<div class="txt-formula">取得原価 ＝ 購入代価 ＋ 付随費用（登記料、手数料、引取運賃など）</div>
+
+<b>■ 減価償却（定額法）</b>
+<div class="txt-formula">減価償却費 ＝（取得原価 − 残存価額）÷ 耐用年数</div>
+<div class="txt-tip">💡 3級では残存価額はゼロが基本。間接法で記帳（減価償却累計額を使用）。</div>
+
+<b>■ 期中取得の月割計算</b>
+<div class="txt-formula">当期の減価償却費 ＝ 1年分の減価償却費 × 使用月数 ÷ 12か月</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：建物（取得原価1,800円、耐用年数30年）を12月に取得。会計期間4月〜3月</div>
+1年分の減価償却費 = 1,800 ÷ 30 = 60円
+当期使用期間 = 12月〜3月 = 4か月
+当期の減価償却費 = 60 × 4/12 = <b>20円</b>
+`+jeHTML("",[["減価償却費",20,"減価償却累計額",20]],"")+`
+</div>
+
+<b>■ 固定資産の売却</b>
+<div style="margin:8px 0;font-size:.85em">
+①取得原価と減価償却累計額を帳簿から除去
+②期中売却の場合 → 当期分の減価償却費を月割で計上
+③売却価額と帳簿価額の差額 → 売却益 or 売却損
+</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：備品（取得原価400円、減価償却累計額150円）を280円で売却</div>
+帳簿価額 = 400 − 150 = 250円、売却価額280円 → 差額30円は<b>売却益</b>
+`+jeHTML("",[["未収入金",280,"備品",400],["減価償却累計額",150,"固定資産売却益",30]],"")+`
+</div>
+`},
+
+{n:12,t:"株式の発行、剰余金の配当と処分",sec:"仕訳編",cases:"68-72",text:`
+<b>■ 株式の発行</b>
+払込金額の全額を<b>資本金（純資産）</b>として処理。
+
+<b>■ 当期純利益の振替</b>
+損益勘定 → <b>繰越利益剰余金</b>の貸方に振替
+
+<b>■ 剰余金の配当・処分</b>（株主総会の決議後）
+・株主への配当 → <b>未払配当金（負債）</b>
+・利益準備金への積立 → <b>利益準備金（純資産）</b>の増加
+・いずれも<b>繰越利益剰余金の借方</b>に記入
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：繰越利益剰余金から配当500円、利益準備金50円を処分</div>
+`+jeHTML("",[["繰越利益剰余金",550,"未払配当金",500],["","","利益準備金",50]],"")+`
+</div>
+`},
+
+{n:13,t:"法人税等と消費税",sec:"仕訳編",cases:"73-77",text:`
+<b>■ 法人税等の流れ</b>
+
+<div style="margin:8px 0;font-size:.85em">
+<b>①中間申告</b>：概算額を仮払い → <b>仮払法人税等（資産）</b>
+<b>②確定申告（決算時）</b>：確定額 − 中間納付額 = <b>未払法人税等（負債）</b>
+</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 例題：中間100円納付、確定額210円</div>
+`+jeHTML("中間申告時",[["仮払法人税等",100,"当座預金",100]],"")+`
+`+jeHTML("確定申告時",[["法人税、住民税及び事業税",210,"仮払法人税等",100],["","","未払法人税等",110]],"差額110円が未払い")+`
+</div>
+
+<b>■ 消費税（税抜方式）</b>
+・仕入時の消費税 → <b>仮払消費税（資産）</b>
+・売上時の消費税 → <b>仮受消費税（負債）</b>
+・決算時：相殺 → 差額は<b>未払消費税（負債）</b>
+
+<div class="txt-formula">消費税額 ＝ 税込価額 × 税率 ÷（100% ＋ 税率）</div>
+
+<div class="txt-ex"><div class="txt-ex-title">📝 税込110円の仕入（税率10%）</div>
+消費税 = 110 × 10/110 = 10円、本体 = 100円
+`+jeHTML("",[["仕入",100,"現金",110],["仮払消費税",10,"",""]],"")+`
+</div>
+`},
+
+{n:14,t:"経過勘定と訂正仕訳",sec:"仕訳編",cases:"78-86",text:`
+<b>■ 経過勘定項目（4つのパターン）</b>
+
+<div style="margin:8px 0;font-size:.85em">
+<div style="padding:8px;background:var(--card2);border-radius:6px;margin:4px 0">
+<b>①費用の前払い</b>：翌期分を当期に支払い済み → <b>前払○○（資産）</b>に振替
+`+jeHTML("",[["前払家賃",40,"支払家賃",40]],"")+`
+</div>
+<div style="padding:8px;background:var(--card2);border-radius:6px;margin:4px 0">
+<b>②費用の未払い</b>：当期分が未払い → <b>未払○○（負債）</b>を計上
+`+jeHTML("",[["支払利息",10,"未払利息",10]],"")+`
+</div>
+<div style="padding:8px;background:var(--card2);border-radius:6px;margin:4px 0">
+<b>③収益の前受け</b>：翌期分を当期に受取済み → <b>前受○○（負債）</b>に振替
+`+jeHTML("",[["受取地代",40,"前受地代",40]],"")+`
+</div>
+<div style="padding:8px;background:var(--card2);border-radius:6px;margin:4px 0">
+<b>④収益の未収</b>：当期分が未収 → <b>未収○○（資産）</b>を計上
+`+jeHTML("",[["未収利息",10,"受取利息",10]],"")+`
+</div>
+</div>
+
+<div class="txt-tip">💡 <b>覚え方</b>：「前払」「未収」は<b>資産</b>（借方）、「前受」「未払」は<b>負債</b>（貸方）。翌期首に必ず<b>再振替仕訳</b>（逆仕訳）を行います。</div>
+
+<b>■ 訂正仕訳</b>
+<div class="txt-formula">訂正仕訳 ＝ 正しい仕訳 − 誤った仕訳（逆仕訳を足す）</div>
+`},
+
+{n:15,t:"帳簿への記入",sec:"帳簿編",cases:"87-94",text:`帳簿への記入方法（仕訳帳、総勘定元帳、各種補助簿）を学ぶ章。
+
+<b>■ 主要簿</b>：仕訳帳と総勘定元帳
+<b>■ 補助簿</b>：現金出納帳、当座預金出納帳、売掛金元帳、買掛金元帳、商品有高帳、仕入帳、売上帳、受取手形記入帳、支払手形記入帳、固定資産台帳など
+
+<div class="txt-tip">💡 補助簿は必要に応じて設けます。どの補助簿に記入するかの判断がよく出題されます。</div>
+`},
+{n:16,t:"試算表",sec:"帳簿編",cases:"95",text:`<b>■ 試算表の種類</b>
+<div style="margin:8px 0;font-size:.85em;line-height:1.8">
+・<b>合計試算表</b>：各勘定の借方合計と貸方合計を集計
+・<b>残高試算表</b>：各勘定の残高（借方合計−貸方合計の差額）を集計
+・<b>合計残高試算表</b>：上記2つを合体させたもの
+</div>
+転記のミスを発見するために使います。`},
+{n:17,t:"伝票と仕訳日計表、証ひょう",sec:"帳簿編",cases:"96-102",text:`<b>■ 三伝票制</b>
+<div style="margin:8px 0;font-size:.85em;line-height:1.8">
+・<b>入金伝票</b>：入金取引（借方が現金）
+・<b>出金伝票</b>：出金取引（貸方が現金）
+・<b>振替伝票</b>：上記以外（現金が関係しない取引）
+</div>
+
+<div class="txt-warn">⚠️ 現金が絡む取引でも、一部振替が必要な場合は<b>取引を分解</b>して記入します。</div>
+`},
+{n:18,t:"精算表と財務諸表",sec:"決算編",cases:"103-115",text:`<b>■ 精算表（八桁式）</b>
+残高試算表 → 決算整理仕訳 → 損益計算書 → 貸借対照表を一覧にまとめた表。
+
+<b>■ 決算整理仕訳のまとめ</b>
+<div style="margin:8px 0;font-size:.82em;line-height:1.8">
+①売上原価の算定（しーくりくりしー）
+②貸倒引当金の設定（差額補充法）
+③減価償却費の計上
+④経過勘定の処理（前払・未払・前受・未収）
+⑤貯蔵品への振替
+⑥現金過不足の処理
+⑦消費税の処理
+⑧法人税等の計上
+</div>
+
+<div class="txt-tip">💡 <b>「しーくりくりしー」</b>（売上原価の算定）
+`+jeHTML("①期首商品を仕入に振替",[["仕入",100,"繰越商品",100]],"")+`
+`+jeHTML("②期末商品を繰越商品に振替",[["繰越商品",150,"仕入",150]],"")+`
+</div>
+`},
+{n:19,t:"帳簿の締め切り",sec:"決算編",cases:"116-119",text:`帳簿の締め切り（収益・費用→損益勘定→繰越利益剰余金への振替、各勘定の締め切り）。
+
+<b>■ 締め切りの流れ</b>
+<div style="margin:8px 0;font-size:.85em">
+①収益の各勘定を損益勘定の貸方に振り替え
+②費用の各勘定を損益勘定の借方に振り替え
+③損益勘定の差額（当期純利益or損失）を繰越利益剰余金に振り替え
+④資産・負債・純資産の各勘定を次期繰越で締め切り
+</div>`}
+];
+
+
+const ALL=[{"id":1,"ch":2,"case":3,"title":"商品を仕入れたときの仕訳（現金）","q":"ゴエモン㈱は、仕入先クロキチ㈱から商品100円を仕入れ、代金は現金で支払った。","entries":[{"dr":"仕入","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"商品を仕入れたときは仕入（費用）で処理。現金で支払ったので現金（資産）の減少。","type":"journal"},{"id":2,"ch":2,"case":4,"title":"商品を売り上げたときの仕訳（現金）","q":"ゴエモン㈱は、商品150円を得意先シロミ㈱に売り上げ、代金は現金で受け取った。","entries":[{"dr":"現金","dr_amt":150,"cr":"売上","cr_amt":150}],"exp":"商品を売り上げたときは売上（収益）で処理。現金で受け取ったので現金（資産）の増加。","type":"journal"},{"id":3,"ch":2,"case":5,"title":"掛けで仕入れたときの仕訳","q":"ゴエモン㈱は、仕入先クロキチ㈱より商品100円を仕入れ、代金は掛けとした。","entries":[{"dr":"仕入","dr_amt":100,"cr":"買掛金","cr_amt":100}],"exp":"掛けで仕入れたときは買掛金（負債）の増加として処理。","type":"journal"},{"id":4,"ch":2,"case":6,"title":"掛けで売り上げたときの仕訳","q":"ゴエモン㈱は、得意先シロミ㈱へ商品150円を売り上げ、代金は掛けとした。","entries":[{"dr":"売掛金","dr_amt":150,"cr":"売上","cr_amt":150}],"exp":"掛けで売り上げたときは売掛金（資産）の増加として処理。","type":"journal"},{"id":5,"ch":2,"case":7,"title":"クレジット払いで売り上げたときの仕訳","q":"ゴエモン㈱は、商品200円をクレジット払いの条件で売り上げた。なお、信販会社への手数料（販売代金の5%）は販売時に計上する。","entries":[{"dr":"クレジット売掛金","dr_amt":190,"cr":"売上","cr_amt":200},{"dr":"支払手数料","dr_amt":10}],"exp":"クレジット売掛金（資産）で処理。手数料は支払手数料（費用）として販売時に計上。","type":"journal"},{"id":6,"ch":2,"case":8,"title":"仕入れた商品を返品したときの仕訳","q":"ゴエモン㈱は、先日クロキチ㈱より掛けで仕入れた商品のうち、10円分を品違いのため返品した。","entries":[{"dr":"買掛金","dr_amt":10,"cr":"仕入","cr_amt":10}],"exp":"仕入戻しは仕入れたときの逆仕訳。買掛金（負債）の減少と仕入（費用）の減少。","type":"journal"},{"id":7,"ch":2,"case":9,"title":"仕入諸掛り（当社負担）の仕訳","q":"ゴエモン㈱は、クロキチ㈱より商品100円を仕入れ、代金は掛けとした。なお、引取運賃（当社負担）10円を現金で支払った。","entries":[{"dr":"仕入","dr_amt":110,"cr":"買掛金","cr_amt":100},{"cr":"現金","cr_amt":10}],"exp":"当社負担の引取運賃は仕入原価に含める。仕入100+運賃10=110円。","type":"journal"},{"id":8,"ch":2,"case":10,"title":"売上諸掛り（当社負担）の仕訳","q":"ゴエモン㈱は、シロミ㈱へ商品160円を掛けで販売した。また、発送運賃10円（当社負担）は現金で支払った。","entries":[{"dr":"売掛金","dr_amt":160,"cr":"売上","cr_amt":160},{"dr":"発送費","dr_amt":10,"cr":"現金","cr_amt":10}],"exp":"当社負担の発送費は費用処理。売上とは別に発送費（費用）として計上。","type":"journal"},{"id":9,"ch":3,"case":11,"title":"他人振出小切手を受け取ったときの仕訳","q":"ゴエモン㈱は、シロミ㈱に商品150円を売り上げ、代金は同社振出の小切手で受け取った。","entries":[{"dr":"現金","dr_amt":150,"cr":"売上","cr_amt":150}],"exp":"他人振出小切手は現金として処理する。","type":"journal"},{"id":10,"ch":3,"case":12,"title":"現金過不足（帳簿＞実際）の仕訳","q":"現金の帳簿残高は120円であるが、実際有高を調べたところ100円であった。","entries":[{"dr":"現金過不足","dr_amt":20,"cr":"現金","cr_amt":20}],"exp":"帳簿残高＞実際有高のとき、現金を減らし現金過不足で処理。","type":"journal"},{"id":11,"ch":3,"case":13,"title":"現金過不足の原因が判明したときの仕訳","q":"かねて現金過不足勘定で処理していた現金不足額20円のうち、10円は通信費の記帳もれであることが判明した。残額は原因不明のままである。","entries":[{"dr":"通信費","dr_amt":10,"cr":"現金過不足","cr_amt":10}],"exp":"原因判明分を該当する勘定科目に振り替える。","type":"journal"},{"id":12,"ch":3,"case":14,"title":"決算日に現金過不足の原因不明分を処理する仕訳","q":"決算日において、現金過不足勘定の残高（借方）10円の原因が不明のため、適切な勘定に振り替える。","entries":[{"dr":"雑損","dr_amt":10,"cr":"現金過不足","cr_amt":10}],"exp":"決算日まで原因不明の場合、借方残高は雑損（費用）、貸方残高は雑益（収益）で処理。","type":"journal"},{"id":13,"ch":4,"case":15,"title":"普通預金口座に預け入れたときの仕訳","q":"ゴエモン㈱は現金100円を賽西銀行の普通預金口座に預け入れた。","entries":[{"dr":"普通預金","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"普通預金（資産）の増加と現金（資産）の減少。","type":"journal"},{"id":14,"ch":4,"case":16,"title":"定期預金口座に預け入れたときの仕訳","q":"ゴエモン㈱は賽西銀行の普通預金口座から定期預金口座へ100円を預け入れた。","entries":[{"dr":"定期預金","dr_amt":100,"cr":"普通預金","cr_amt":100}],"exp":"定期預金（資産）の増加と普通預金（資産）の減少。","type":"journal"},{"id":15,"ch":4,"case":17,"title":"当座預金口座に預け入れたときの仕訳","q":"ゴエモン㈱は、賽西銀行と当座取引契約を結び、現金100円を当座預金口座に預け入れた。","entries":[{"dr":"当座預金","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"当座預金（資産）の増加。","type":"journal"},{"id":16,"ch":4,"case":18,"title":"小切手を振り出したときの仕訳","q":"ゴエモン㈱はクロキチ㈱に対する買掛金100円を支払うため、小切手を振り出して渡した。","entries":[{"dr":"買掛金","dr_amt":100,"cr":"当座預金","cr_amt":100}],"exp":"小切手を振り出すと当座預金（資産）が減少する。","type":"journal"},{"id":17,"ch":4,"case":19,"title":"当座預金の残高を超えて引き出したときの仕訳","q":"ゴエモン㈱は、クロキチ㈱より商品200円を仕入れ、小切手を振り出して支払った。なお、当座預金の残高は150円であり、賽西銀行との間に借越限度額500円の当座借越契約を結んでいる。","entries":[{"dr":"仕入","dr_amt":200,"cr":"当座預金","cr_amt":200}],"exp":"当座借越契約がある場合、残高を超えても当座預金勘定で処理する。","type":"journal"},{"id":18,"ch":4,"case":20,"title":"決算日の当座借越の振り替え仕訳","q":"決算日において当座預金が20円の貸方残高であるため、当座借越勘定に振り替える。","entries":[{"dr":"当座預金","dr_amt":20,"cr":"当座借越","cr_amt":20}],"exp":"決算日に当座預金の貸方残高は当座借越（負債）に振り替える。","type":"journal"},{"id":19,"ch":5,"case":21,"title":"小口現金を前渡ししたときの仕訳","q":"会計係は小口現金係に小口現金500円を小切手を振り出して前渡しした。","entries":[{"dr":"小口現金","dr_amt":500,"cr":"当座預金","cr_amt":500}],"exp":"小口現金（資産）の増加と当座預金（資産）の減少。","type":"journal"},{"id":20,"ch":5,"case":23,"title":"小口現金係から支払報告を受けたときの仕訳","q":"小口現金係より、文房具代（消耗品費）100円とお茶菓子代（雑費）200円を小口現金で支払ったという報告を受けた。","entries":[{"dr":"消耗品費","dr_amt":100,"cr":"小口現金","cr_amt":300},{"dr":"雑費","dr_amt":200}],"exp":"支払報告を受けたら各費用を計上し、小口現金を減少させる。","type":"journal"},{"id":21,"ch":5,"case":24,"title":"小口現金を補給したときの仕訳","q":"会計係は小口現金係に小口現金300円を小切手を振り出して補給した。","entries":[{"dr":"小口現金","dr_amt":300,"cr":"当座預金","cr_amt":300}],"exp":"定額資金前渡法（インプレスト・システム）では使った分だけ補給する。","type":"journal"},{"id":22,"ch":6,"case":25,"title":"約束手形を振り出したときの仕訳","q":"ゴエモン㈱は、クロキチ㈱より商品100円を仕入れ、代金は約束手形を振り出して支払った。","entries":[{"dr":"仕入","dr_amt":100,"cr":"支払手形","cr_amt":100}],"exp":"約束手形を振り出したときは支払手形（負債）の増加。","type":"journal"},{"id":23,"ch":6,"case":26,"title":"約束手形を受け取ったときの仕訳","q":"ゴエモン㈱は、シロミ㈱へ商品100円を売り上げ、代金は同社振出の約束手形で受け取った。","entries":[{"dr":"受取手形","dr_amt":100,"cr":"売上","cr_amt":100}],"exp":"約束手形を受け取ったときは受取手形（資産）の増加。","type":"journal"},{"id":24,"ch":6,"case":28,"title":"電子記録債権が発生したときの仕訳","q":"ゴエモン㈱は、シロミ㈱に対する売掛金100円について、同社の承諾を得て電子記録債権の発生記録を行った。","entries":[{"dr":"電子記録債権","dr_amt":100,"cr":"売掛金","cr_amt":100}],"exp":"電子記録債権（資産）が発生し、売掛金（資産）が減少する。","type":"journal"},{"id":25,"ch":6,"case":29,"title":"電子記録債権が消滅したときの仕訳","q":"ゴエモン㈱の電子記録債権100円の支払期日が到来し、当座預金口座に振り込まれた。","entries":[{"dr":"当座預金","dr_amt":100,"cr":"電子記録債権","cr_amt":100}],"exp":"支払期日到来で口座に入金され、電子記録債権（資産）が消滅。","type":"journal"},{"id":26,"ch":7,"case":30,"title":"お金を貸し付けたときの仕訳","q":"ゴエモン㈱は、取引先に現金500円を貸し付けた。","entries":[{"dr":"貸付金","dr_amt":500,"cr":"現金","cr_amt":500}],"exp":"お金を貸し付けたときは貸付金（資産）の増加。","type":"journal"},{"id":27,"ch":7,"case":31,"title":"貸付金を返してもらったときの仕訳","q":"ゴエモン㈱は、貸付金500円の返済を受け、利息10円とともに現金で受け取った。","entries":[{"dr":"現金","dr_amt":510,"cr":"貸付金","cr_amt":500},{"cr":"受取利息","cr_amt":10}],"exp":"貸付金（資産）の減少と受取利息（収益）の発生。","type":"journal"},{"id":28,"ch":7,"case":32,"title":"お金を借り入れたときの仕訳","q":"ゴエモン㈱は、取引銀行から現金600円を借り入れた。","entries":[{"dr":"現金","dr_amt":600,"cr":"借入金","cr_amt":600}],"exp":"お金を借り入れたときは借入金（負債）の増加。","type":"journal"},{"id":29,"ch":7,"case":33,"title":"借入金を返したときの仕訳","q":"ゴエモン㈱は、取引銀行に借入金600円を返済し、利息10円とともに現金で支払った。","entries":[{"dr":"借入金","dr_amt":600,"cr":"現金","cr_amt":610},{"dr":"支払利息","dr_amt":10}],"exp":"借入金（負債）の減少と支払利息（費用）の発生。","type":"journal"},{"id":30,"ch":7,"case":34,"title":"手形貸付金の仕訳","q":"ゴエモン㈱は、取引先に現金100円を貸し付け、約束手形を受け取った。","entries":[{"dr":"手形貸付金","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"手形を受け取って貸し付けたときは手形貸付金（資産）で処理。","type":"journal"},{"id":31,"ch":7,"case":35,"title":"手形借入金の仕訳","q":"ゴエモン㈱は、取引銀行から現金100円を借り入れ、約束手形を振り出した。","entries":[{"dr":"現金","dr_amt":100,"cr":"手形借入金","cr_amt":100}],"exp":"手形を振り出して借り入れたときは手形借入金（負債）で処理。","type":"journal"},{"id":32,"ch":8,"case":36,"title":"商品以外のものを後払いで買ったときの仕訳","q":"ゴエモン㈱は、営業用の建物100円を購入し、代金は月末に支払うこととした。","entries":[{"dr":"建物","dr_amt":100,"cr":"未払金","cr_amt":100}],"exp":"商品以外のものの未払額は未払金（負債）で処理。買掛金ではない。","type":"journal"},{"id":33,"ch":8,"case":37,"title":"商品以外のものを売って代金をあとで受け取る仕訳","q":"ゴエモン㈱は、不要になった備品（帳簿価額100円）を100円で売却し、代金は月末に受け取ることとした。","entries":[{"dr":"未収入金","dr_amt":100,"cr":"備品","cr_amt":100}],"exp":"商品以外のものの未収額は未収入金（資産）で処理。売掛金ではない。","type":"journal"},{"id":34,"ch":8,"case":38,"title":"内金を支払ったときの仕訳","q":"ゴエモン㈱は、商品の注文にあたって、内金20円を現金で支払った。","entries":[{"dr":"前払金","dr_amt":20,"cr":"現金","cr_amt":20}],"exp":"内金を支払ったときは前払金（資産）で処理。","type":"journal"},{"id":35,"ch":8,"case":39,"title":"内金を支払って商品を仕入れたときの仕訳","q":"ゴエモン㈱は、先に注文していた商品100円を仕入れ、内金20円を差し引いた残額は掛けとした。","entries":[{"dr":"仕入","dr_amt":100,"cr":"前払金","cr_amt":20},{"cr":"買掛金","cr_amt":80}],"exp":"前払金（資産）を減らし、残額は買掛金（負債）で処理。","type":"journal"},{"id":36,"ch":8,"case":40,"title":"内金を受け取ったときの仕訳","q":"ゴエモン㈱は、商品の注文を受け、内金20円を現金で受け取った。","entries":[{"dr":"現金","dr_amt":20,"cr":"前受金","cr_amt":20}],"exp":"内金を受け取ったときは前受金（負債）で処理。","type":"journal"},{"id":37,"ch":8,"case":41,"title":"内金を受け取って商品を売り上げたときの仕訳","q":"ゴエモン㈱は、先に注文を受けていた商品100円を売り上げ、内金20円を差し引いた残額は掛けとした。","entries":[{"dr":"前受金","dr_amt":20,"cr":"売上","cr_amt":100},{"dr":"売掛金","dr_amt":80}],"exp":"前受金（負債）を減らし、残額は売掛金（資産）で処理。","type":"journal"},{"id":38,"ch":8,"case":42,"title":"旅費の概算額を前渡ししたときの仕訳","q":"ゴエモン㈱は、従業員の出張にあたって、旅費の概算額100円を現金で前渡しした。","entries":[{"dr":"仮払金","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"概算額の前渡しは仮払金（資産）で処理。","type":"journal"},{"id":39,"ch":8,"case":43,"title":"仮払金の内容と金額が確定したときの仕訳","q":"従業員が出張から戻り、旅費交通費が80円であることが判明し、残額20円は現金で返金された。","entries":[{"dr":"旅費交通費","dr_amt":80,"cr":"仮払金","cr_amt":100},{"dr":"現金","dr_amt":20}],"exp":"仮払金（資産）を該当する勘定科目に振り替え、残額は返金処理。","type":"journal"},{"id":40,"ch":8,"case":44,"title":"内容不明の入金があったときの仕訳","q":"出張中の従業員から当座預金口座に100円の入金があったが、その内容は不明である。","entries":[{"dr":"当座預金","dr_amt":100,"cr":"仮受金","cr_amt":100}],"exp":"内容不明の入金は仮受金（負債）で処理。","type":"journal"},{"id":41,"ch":8,"case":45,"title":"仮受金の内容が明らかになったときの仕訳","q":"先の当座預金口座への入金100円は、得意先から売掛金を回収した金額であることが判明した。","entries":[{"dr":"仮受金","dr_amt":100,"cr":"売掛金","cr_amt":100}],"exp":"仮受金（負債）を該当する勘定科目に振り替える。","type":"journal"},{"id":42,"ch":8,"case":46,"title":"先方負担の仕入諸掛りを立て替えたときの仕訳","q":"ゴエモン㈱は商品100円を仕入れ、代金は掛けとした。なお、先方負担の引取運賃10円を現金で立て替えた。","entries":[{"dr":"仕入","dr_amt":100,"cr":"買掛金","cr_amt":100},{"dr":"立替金","dr_amt":10,"cr":"現金","cr_amt":10}],"exp":"先方負担の諸掛りは立替金（資産）で処理（または買掛金と相殺）。","type":"journal"},{"id":43,"ch":8,"case":47,"title":"従業員立替金の仕訳","q":"ゴエモン㈱は、従業員が負担すべき生命保険料40円を現金で立て替えて支払った。","entries":[{"dr":"従業員立替金","dr_amt":40,"cr":"現金","cr_amt":40}],"exp":"従業員が負担すべき金額を立て替えたときは従業員立替金（資産）で処理。","type":"journal"},{"id":44,"ch":8,"case":48,"title":"給料支払時に立替金を差し引く仕訳","q":"ゴエモン㈱は、従業員に給料500円を支払う際、先に立て替えていた生命保険料40円を差し引き、残額を現金で支払った。","entries":[{"dr":"給料","dr_amt":500,"cr":"従業員立替金","cr_amt":40},{"cr":"現金","cr_amt":460}],"exp":"給料（費用）の発生。従業員立替金（資産）を回収し、残額を現金で支払う。","type":"journal"},{"id":45,"ch":8,"case":49,"title":"給料支払時に源泉徴収税額を差し引く仕訳","q":"給料500円のうち、源泉徴収税額50円を差し引いた残額を従業員に現金で支払った。","entries":[{"dr":"給料","dr_amt":500,"cr":"預り金","cr_amt":50},{"cr":"現金","cr_amt":450}],"exp":"源泉徴収税額は預り金（負債）として処理。あとで従業員に代わって国に納める。","type":"journal"},{"id":46,"ch":8,"case":50,"title":"預り金を支払ったときの仕訳","q":"預り金として処理していた源泉徴収税額50円を、税務署に現金で納付した。","entries":[{"dr":"預り金","dr_amt":50,"cr":"現金","cr_amt":50}],"exp":"預り金（負債）の減少。預かっていたお金を返す義務がなくなる。","type":"journal"},{"id":47,"ch":8,"case":51,"title":"商品を売り上げ、商品券を受け取ったときの仕訳","q":"ゴエモン㈱は商品150円を売り上げ、自治体が発行した商品券100円と現金50円を受け取った。","entries":[{"dr":"受取商品券","dr_amt":100,"cr":"売上","cr_amt":150},{"dr":"現金","dr_amt":50}],"exp":"自治体等が発行した商品券はあとで買い取ってもらえるので受取商品券（資産）で処理。","type":"journal"},{"id":48,"ch":8,"case":52,"title":"商品券を買い取ってもらったときの仕訳","q":"ゴエモン㈱は所有している自治体発行の商品券100円を買い取ってもらい、代金は現金で受け取った。","entries":[{"dr":"現金","dr_amt":100,"cr":"受取商品券","cr_amt":100}],"exp":"受取商品券（資産）の減少。","type":"journal"},{"id":49,"ch":8,"case":53,"title":"敷金や保証金を支払ったときの仕訳","q":"ゴエモン㈱は、店舗の賃借にあたって、敷金100円を現金で支払った。","entries":[{"dr":"差入保証金","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"敷金や保証金は退去時に返してもらえるので差入保証金（資産）で処理。","type":"journal"},{"id":50,"ch":9,"case":54,"title":"消耗品を買ったときの仕訳","q":"ゴエモン㈱はコピー用紙（消耗品）100円を購入し、現金で支払った。","entries":[{"dr":"消耗品費","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"消耗品を購入したときは消耗品費（費用）で処理。","type":"journal"},{"id":51,"ch":9,"case":55,"title":"切手やはがきを買ったときの仕訳","q":"ゴエモン㈱は、郵便切手150円分を購入し、現金で支払った。","entries":[{"dr":"通信費","dr_amt":150,"cr":"現金","cr_amt":150}],"exp":"郵便切手や郵便はがきの購入は通信費（費用）で処理。","type":"journal"},{"id":52,"ch":9,"case":56,"title":"固定資産税などを支払ったときの仕訳","q":"ゴエモン㈱は、会社の建物の固定資産税40円を現金で支払った。","entries":[{"dr":"租税公課","dr_amt":40,"cr":"現金","cr_amt":40}],"exp":"固定資産税、自動車税、印紙税などの税金は租税公課（費用）で処理。","type":"journal"},{"id":53,"ch":9,"case":57,"title":"決算日に切手や収入印紙が残っているときの仕訳","q":"決算日において郵便切手50円分と収入印紙70円分が残っている。購入時に郵便切手は通信費、収入印紙は租税公課で処理している。","entries":[{"dr":"貯蔵品","dr_amt":120,"cr":"通信費","cr_amt":50},{"cr":"租税公課","cr_amt":70}],"exp":"残っている分だけ通信費・租税公課（費用）から貯蔵品（資産）に振り替える。","type":"journal"},{"id":54,"ch":9,"case":58,"title":"社会保険料（会社負担分）を納付したときの仕訳","q":"ゴエモン㈱は、従業員の健康保険料と厚生年金保険料について、会社負担分である100円を現金で納付した。","entries":[{"dr":"法定福利費","dr_amt":100,"cr":"現金","cr_amt":100}],"exp":"会社負担分の社会保険料は法定福利費（費用）で処理。","type":"journal"},{"id":55,"ch":10,"case":59,"title":"当期に発生した売掛金が貸し倒れたときの仕訳","q":"得意先シャム㈱が倒産し、売掛金100円（当期に発生）が貸し倒れた。","entries":[{"dr":"貸倒損失","dr_amt":100,"cr":"売掛金","cr_amt":100}],"exp":"当期に発生した売掛金の貸倒れは全額、貸倒損失（費用）で処理。","type":"journal"},{"id":56,"ch":10,"case":60,"title":"貸倒引当金の設定（差額補充法）の仕訳","q":"決算日において、売掛金の期末残高400円について、2%の貸倒引当金を設定する（差額補充法）。","entries":[{"dr":"貸倒引当金繰入","dr_amt":8,"cr":"貸倒引当金","cr_amt":8}],"exp":"貸倒引当金の設定額＝400円×2%＝8円。貸倒引当金繰入（費用）で処理。","type":"journal"},{"id":57,"ch":10,"case":61,"title":"前期以前に発生した売掛金が貸し倒れたときの仕訳","q":"得意先シロミ㈱が倒産し、売掛金（前期に発生）50円が貸し倒れた。なお、貸倒引当金の残高が8円ある。","entries":[{"dr":"貸倒引当金","dr_amt":8,"cr":"売掛金","cr_amt":50},{"dr":"貸倒損失","dr_amt":42}],"exp":"まず貸倒引当金を取り崩し、超過額は貸倒損失（費用）で処理。","type":"journal"},{"id":58,"ch":10,"case":62,"title":"前期に貸倒処理した売掛金を回収したときの仕訳","q":"前期に貸倒処理したシロミ㈱に対する売掛金50円を現金で回収した。","entries":[{"dr":"現金","dr_amt":50,"cr":"償却債権取立益","cr_amt":50}],"exp":"前期以前に貸倒処理した売掛金の回収は償却債権取立益（収益）で処理。","type":"journal"},{"id":59,"ch":11,"case":63,"title":"固定資産を購入したときの仕訳","q":"ゴエモン㈱は、建物1,600円を購入し、代金は月末に支払うこととした。なお、購入にあたっての登記料140円と仲介手数料60円は現金で支払った。","entries":[{"dr":"建物","dr_amt":1800,"cr":"未払金","cr_amt":1600},{"cr":"現金","cr_amt":200}],"exp":"取得原価＝購入代価1,600＋付随費用200（登記料140＋手数料60）＝1,800円。","type":"journal"},{"id":60,"ch":11,"case":64,"title":"固定資産の減価償却（期首取得・定額法）の仕訳","q":"決算につき、当期首に購入した建物（取得原価1,800円）について減価償却を行う。なお、減価償却方法は定額法（耐用年数30年、残存価額はゼロ）、記帳方法は間接法による。","entries":[{"dr":"減価償却費","dr_amt":60,"cr":"減価償却累計額","cr_amt":60}],"exp":"減価償却費＝1,800円÷30年＝60円。間接法では減価償却累計額（資産のマイナス）を使う。","type":"journal"},{"id":61,"ch":11,"case":65,"title":"固定資産の減価償却（期中取得・月割計算）の仕訳","q":"決算につき、12月1日に購入した建物（取得原価1,800円）について減価償却を行う。なお、定額法（耐用年数30年、残存価額はゼロ）、間接法による。会計期間は4月1日〜3月31日。","entries":[{"dr":"減価償却費","dr_amt":20,"cr":"減価償却累計額","cr_amt":20}],"exp":"1年分の減価償却費60円×4か月/12か月＝20円。期中取得は月割計算。","type":"journal"},{"id":62,"ch":11,"case":66,"title":"固定資産を売却したときの仕訳（売却益）","q":"当期首において、備品（取得原価400円、減価償却累計額150円、間接法で記帳）を280円で売却し、代金は月末に受け取ることとした。","entries":[{"dr":"未収入金","dr_amt":280,"cr":"備品","cr_amt":400},{"dr":"減価償却累計額","dr_amt":150,"cr":"固定資産売却益","cr_amt":30}],"exp":"帳簿価額250円（400-150）＜売却価額280円なので、差額30円は固定資産売却益（収益）。","type":"journal"},{"id":63,"ch":11,"case":67,"title":"固定資産を売却したときの仕訳（期中売却・売却損）","q":"ゴエモン㈱は、トラック（取得原価900円、期首の減価償却累計額540円、定額法、残存価額ゼロ、耐用年数5年、間接法）を1月31日に200円で売却し、代金は月末に受け取ることとした。会計期間は4月1日〜3月31日。","entries":[{"dr":"減価償却累計額","dr_amt":540,"cr":"車両運搬具","cr_amt":900},{"dr":"未収入金","dr_amt":200},{"dr":"減価償却費","dr_amt":150},{"dr":"固定資産売却損","dr_amt":10}],"exp":"当期分の減価償却費180円×10か月/12か月＝150円を計上。帳簿価額210円＞売却価額200円なので売却損10円。","type":"journal"},{"id":64,"ch":12,"case":69,"title":"会社を設立して株式を発行したときの仕訳","q":"ゴエモン㈱は、会社の設立にあたって株式100株を1株あたり10円で発行し、全株式の払い込みを受け、払込金額は普通預金とした。","entries":[{"dr":"普通預金","dr_amt":1000,"cr":"資本金","cr_amt":1000}],"exp":"払込金額の全額を資本金（純資産）として処理。@10円×100株＝1,000円。","type":"journal"},{"id":65,"ch":12,"case":70,"title":"増資をしたときの仕訳","q":"増資のため、株式20株を1株あたり10円で発行し、全株式の払い込みを受け、払込金額は当座預金とした。","entries":[{"dr":"当座預金","dr_amt":200,"cr":"資本金","cr_amt":200}],"exp":"増資でも設立時と同様、払込金額を資本金として処理。@10円×20株＝200円。","type":"journal"},{"id":66,"ch":12,"case":71,"title":"当期純利益を計上したときの仕訳","q":"ゴエモン㈱は第1期の決算において当期純利益260円を計上した。","entries":[{"dr":"損益","dr_amt":260,"cr":"繰越利益剰余金","cr_amt":260}],"exp":"当期純利益は損益勘定から繰越利益剰余金勘定の貸方に振り替える。","type":"journal"},{"id":67,"ch":12,"case":72,"title":"剰余金を配当、処分したときの仕訳","q":"株主総会において、繰越利益剰余金1,000円を次のように配当、処分することが承認された。株主配当金500円、利益準備金50円。","entries":[{"dr":"繰越利益剰余金","dr_amt":550,"cr":"未払配当金","cr_amt":500},{"cr":"利益準備金","cr_amt":50}],"exp":"繰越利益剰余金からそれぞれの勘定科目に振り替え。配当金は未払配当金（負債）。","type":"journal"},{"id":68,"ch":13,"case":73,"title":"法人税等を中間申告、納付したときの仕訳","q":"ゴエモン㈱は、法人税の中間納付を行い、税額100円を小切手を振り出して納付した。","entries":[{"dr":"仮払法人税等","dr_amt":100,"cr":"当座預金","cr_amt":100}],"exp":"中間納付額は概算額なので仮払法人税等（資産）で処理。","type":"journal"},{"id":69,"ch":13,"case":74,"title":"法人税等が確定したとき（決算時）の仕訳","q":"決算の結果、法人税、住民税及び事業税が210円と計算された。なお、中間納付額100円を差し引いた金額を未払分として計上した。","entries":[{"dr":"法人税、住民税及び事業税","dr_amt":210,"cr":"仮払法人税等","cr_amt":100},{"cr":"未払法人税等","cr_amt":110}],"exp":"確定額210円から中間納付額100円を差引き、差額110円は未払法人税等（負債）。","type":"journal"},{"id":70,"ch":13,"case":75,"title":"消費税を支払ったときの仕訳（税抜方式）","q":"ゴエモン㈱はクロキチ㈱より商品110円（税込価額）を仕入れ、代金は現金で支払った。なお、消費税率は10%である。","entries":[{"dr":"仕入","dr_amt":100,"cr":"現金","cr_amt":110},{"dr":"仮払消費税","dr_amt":10}],"exp":"支払った消費税10円は仮払消費税（資産）で処理。仕入は税抜価額100円。","type":"journal"},{"id":71,"ch":13,"case":76,"title":"消費税を受け取ったときの仕訳（税抜方式）","q":"商品330円（税込価額）を売り上げ、代金は現金で受け取った。なお、消費税率は10%である。","entries":[{"dr":"現金","dr_amt":330,"cr":"売上","cr_amt":300},{"cr":"仮受消費税","cr_amt":30}],"exp":"受け取った消費税30円は仮受消費税（負債）で処理。売上は税抜価額300円。","type":"journal"},{"id":72,"ch":13,"case":77,"title":"消費税の決算時の仕訳","q":"決算につき、仮払消費税10円と仮受消費税30円を相殺し、納付額を確定する。","entries":[{"dr":"仮受消費税","dr_amt":30,"cr":"仮払消費税","cr_amt":10},{"cr":"未払消費税","cr_amt":20}],"exp":"仮払消費税と仮受消費税を相殺し、差額は未払消費税（負債）で処理。","type":"journal"},{"id":73,"ch":14,"case":78,"title":"家賃を前払いしたときの仕訳","q":"ゴエモン㈱は、向こう1年分の家賃120円を現金で支払った。","entries":[{"dr":"支払家賃","dr_amt":120,"cr":"現金","cr_amt":120}],"exp":"支払時は全額を支払家賃（費用）で処理。決算で前払分を振り替える。","type":"journal"},{"id":74,"ch":14,"case":79,"title":"決算日の処理（費用の前払い）の仕訳","q":"決算日において、支払家賃のうち40円は翌期分である。前払分を前払家賃に振り替える。","entries":[{"dr":"前払家賃","dr_amt":40,"cr":"支払家賃","cr_amt":40}],"exp":"翌期分の費用は前払家賃（資産）に振り替える。当期の費用から除外。","type":"journal"},{"id":75,"ch":14,"case":80,"title":"お金を借り入れた（利息を後払い）ときの仕訳","q":"ゴエモン㈱は、銀行から現金600円を借り入れた。利息は返済時に支払う。","entries":[{"dr":"現金","dr_amt":600,"cr":"借入金","cr_amt":600}],"exp":"利息は後払いなので借入時には利息の仕訳はしない。","type":"journal"},{"id":76,"ch":14,"case":81,"title":"決算日の処理（費用の未払い）の仕訳","q":"決算日において、借入金に対する当期分の利息10円が未払いである。","entries":[{"dr":"支払利息","dr_amt":10,"cr":"未払利息","cr_amt":10}],"exp":"当期に属する利息は未払利息（負債）を計上し、支払利息（費用）で処理。","type":"journal"},{"id":77,"ch":14,"case":82,"title":"地代を前受けしたときの仕訳","q":"ゴエモン㈱は、向こう1年分の地代120円を現金で受け取った。","entries":[{"dr":"現金","dr_amt":120,"cr":"受取地代","cr_amt":120}],"exp":"受取時は全額を受取地代（収益）で処理。決算で前受分を振り替える。","type":"journal"},{"id":78,"ch":14,"case":83,"title":"決算日の処理（収益の前受け）の仕訳","q":"決算日において、受取地代のうち40円は翌期分である。前受分を前受地代に振り替える。","entries":[{"dr":"受取地代","dr_amt":40,"cr":"前受地代","cr_amt":40}],"exp":"翌期分の収益は前受地代（負債）に振り替える。当期の収益から除外。","type":"journal"},{"id":79,"ch":14,"case":84,"title":"お金を貸し付けた（利息を後で受け取る）ときの仕訳","q":"ゴエモン㈱は、取引先に現金500円を貸し付けた。利息は返済時に受け取る。","entries":[{"dr":"貸付金","dr_amt":500,"cr":"現金","cr_amt":500}],"exp":"利息は後で受け取るので貸付時には利息の仕訳はしない。","type":"journal"},{"id":80,"ch":14,"case":85,"title":"決算日の処理（収益の未収）の仕訳","q":"決算日において、貸付金に対する当期分の利息10円が未収である。","entries":[{"dr":"未収利息","dr_amt":10,"cr":"受取利息","cr_amt":10}],"exp":"当期に属する利息は未収利息（資産）を計上し、受取利息（収益）で処理。","type":"journal"},{"id":81,"ch":14,"case":86,"title":"誤った仕訳を訂正するときの仕訳","q":"通信費50円を支払った際、誤って消耗品費50円と記帳していたことが判明した。これを訂正する。","entries":[{"dr":"通信費","dr_amt":50,"cr":"消耗品費","cr_amt":50}],"exp":"訂正仕訳＝正しい仕訳ー誤った仕訳。消耗品費を取消し、通信費を計上。","type":"journal"},{"id":200,"ch":18,"case":115,"title":"決算整理後の損益計算書の作成","q":"次の決算整理後の各勘定残高から、損益計算書を完成させなさい。（会計期間：×2年4月1日〜×3年3月31日）\n\n【残高】売上高 5,000／売上原価 3,000／給料 800／広告宣伝費 100／貸倒引当金繰入 20／減価償却費 80／受取利息 40／支払利息 50","type":"worksheet","template":{"title":"損益計算書","subtitle":"×2年4月1日〜×3年3月31日","rows":[{"label":"売上高","side":"収益","answer":5000},{"label":"売上原価","side":"費用","answer":3000},{"label":"給料","side":"費用","answer":800},{"label":"広告宣伝費","side":"費用","answer":100},{"label":"貸倒引当金繰入","side":"費用","answer":20},{"label":"減価償却費","side":"費用","answer":80},{"label":"受取利息","side":"収益","answer":40},{"label":"支払利息","side":"費用","answer":50},{"label":"当期純利益","side":"計算","answer":990,"formula":"収益合計−費用合計"}]},"exp":"収益合計：5,000＋40＝5,040円\n費用合計：3,000＋800＋100＋20＋80＋50＝4,050円\n当期純利益：5,040−4,050＝990円"},{"id":201,"ch":18,"case":115,"title":"貸借対照表の作成","q":"次の決算整理後の各勘定残高から、貸借対照表を完成させなさい。（×3年3月31日現在）\n\n【残高】現金 500／売掛金 800／貸倒引当金 16／商品 400／建物 2,000／減価償却累計額 200／買掛金 600／借入金 500／資本金 1,500／繰越利益剰余金 884","type":"worksheet","template":{"title":"貸借対照表","subtitle":"×3年3月31日","rows":[{"label":"現金","side":"資産","answer":500},{"label":"売掛金","side":"資産","answer":800},{"label":"貸倒引当金","side":"資産控除","answer":-16},{"label":"商品","side":"資産","answer":400},{"label":"建物","side":"資産","answer":2000},{"label":"減価償却累計額","side":"資産控除","answer":-200},{"label":"買掛金","side":"負債","answer":600},{"label":"借入金","side":"負債","answer":500},{"label":"資本金","side":"純資産","answer":1500},{"label":"繰越利益剰余金","side":"純資産","answer":884}]},"exp":"資産合計：500+800-16+400+2000-200=3,484円\n負債・純資産合計：600+500+1500+884=3,484円\n両者は一致します。"}];
+
+const ACCT_NAMES=["現金","小口現金","当座預金","普通預金","定期預金","受取手形","売掛金","クレジット売掛金","電子記録債権","貸付金","手形貸付金","未収入金","前払金","仮払金","仮払法人税等","仮払消費税","立替金","従業員立替金","受取商品券","差入保証金","商品","貯蔵品","建物","備品","車両運搬具","土地","減価償却累計額","支払手形","買掛金","電子記録債務","借入金","手形借入金","未払金","前受金","仮受金","預り金","所得税預り金","社会保険料預り金","未払配当金","当座借越","未払法人税等","仮受消費税","未払消費税","貸倒引当金","資本金","利益準備金","繰越利益剰余金","仕入","売上","売上原価","受取利息","受取地代","受取手数料","受取家賃","雑益","償却債権取立益","固定資産売却益","貸倒引当金戻入","給料","法定福利費","広告宣伝費","旅費交通費","通信費","消耗品費","水道光熱費","支払家賃","支払地代","支払利息","支払手数料","保険料","修繕費","租税公課","雑費","雑損","貸倒損失","貸倒引当金繰入","減価償却費","固定資産売却損","発送費","法人税、住民税及び事業税","損益","現金過不足","繰越商品","前払保険料","前払家賃","前受家賃","前受地代","未払利息","未払家賃","未収利息","未収地代"].sort((a,b)=>a.localeCompare(b,'ja'));
+
+const LS='boki3v4';
+let S={stats:{},textViews:{},textChecks:{},daily:{},settings:{dark:false,fontSize:'16px',tts:false,goalCount:10,goalRate:80},memo:'',resume:null};
+function ld(){try{const d=localStorage.getItem(LS);if(d){const p=JSON.parse(d);Object.assign(S,p)}}catch(e){}}
+function sv(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+ld();
+
+let curTab='T-text';
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('act'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('act'));
+  document.getElementById(id)?.classList.add('act');curTab=id;
+  document.querySelector(`[data-tab="${id}"]`)?.classList.add('act');
+  if(id==='T-stats')renderStats();
+  if(id==='T-quiz'){document.getElementById('qMenu').classList.remove('hide');document.getElementById('qPlay').classList.add('hide');document.getElementById('backBtn').classList.add('hide');renderResumePanel();renderPickList()}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goBack(){
+  if(curTab==='T-quiz'&&!document.getElementById('qPlay').classList.contains('hide')){
+    if(QS.questions.length>0&&QS.idx<QS.questions.length&&QS.mode!=='single'){
+      S.resume={mode:QS.mode,idx:QS.idx,qids:QS.questions.map(q=>q.id),correct:QS.correct,answered:QS.answered,ts:Date.now()};sv();
+    }
+    document.getElementById('qMenu').classList.remove('hide');document.getElementById('qPlay').classList.add('hide');document.getElementById('backBtn').classList.add('hide');
+    renderResumePanel();renderPickList();
+  }
+}
+
+function init(){
+  applySt();renderText();renderQMenu();renderRef();renderStats();
+  document.getElementById('memoText').value=S.memo||'';
+  document.getElementById('gC').value=S.settings.goalCount||10;
+  document.getElementById('gR').value=S.settings.goalRate||80;
+  const sel=document.getElementById('pickChSel');
+  CHAPTERS.forEach(ch=>{const c=ALL.filter(q=>q.ch===ch.n).length;if(c>0){const o=document.createElement('option');o.value=ch.n;o.textContent=`第${ch.n}章 ${ch.t}（${c}問）`;sel.appendChild(o)}});
+  renderPickList();
+}
+
+/* TEXT TAB */
+function renderText(){
+  const c=document.getElementById('textSec');let sec='',h='';
+  CHAPTERS.forEach(ch=>{
+    if(ch.sec!==sec){sec=ch.sec;h+=`<div style="margin:12px 0 6px;font-size:.78em;color:var(--dim);border-bottom:1px solid var(--bdr);padding-bottom:3px">📚 ${sec}</div>`}
+    const views=S.textViews[ch.n]||0;
+    const checks=S.textChecks[ch.n]||[false,false,false];
+    const cases=ALL.filter(q=>q.ch===ch.n);
+    let body=`<div class="chk-row"><span style="font-size:.72em;color:var(--dim);margin-right:4px">理解度：</span>`;
+    for(let i=0;i<3;i++){body+=`<div class="chk-btn ${checks[i]?'done':''}" onclick="toggleChk(${ch.n},${i},this)">${checks[i]?'✓':i+1}</div>`}
+    body+=`<span style="font-size:.68em;color:var(--dim);margin-left:4px" id="chkCnt${ch.n}">(${checks.filter(Boolean).length}/3)</span></div>`;
+    body+=`<div style="margin:8px 0">${ch.text||'（準備中）'}</div>`;
+    if(cases.length>0){
+      body+=`<div style="margin-top:10px;font-size:.82em;font-weight:700;color:var(--pri)">📝 この章の問題（${cases.length}問）</div>`;
+      cases.forEach(q=>{
+        body+=`<div style="padding:8px;margin:4px 0;background:var(--card2);border-radius:6px;border-left:3px solid var(--pri);cursor:pointer" onclick="jumpToQ(${q.id})">`;
+        body+=`<div style="font-weight:600;font-size:.82em;color:var(--pri)">CASE ${q.case}: ${q.title} <span style="font-size:.75em;color:var(--dim)">▶タップで問題へ</span></div>`;
+        if(q.type!=='worksheet'){
+          body+=`<div style="font-size:.78em;color:var(--dim);margin:3px 0">${q.q}</div>`;
+          body+=`<div class="je-display">${fmtJE(q.entries)}</div>`;
+        }else{
+          body+=`<div style="font-size:.78em;color:var(--dim);margin:3px 0">${(q.q||'').substring(0,80)}...</div>`;
+        }
+        body+='</div>';
+      });
+    }
+    const badge=views>0?`閲覧${views}回`:'未読';
+    h+=`<div class="acc" data-ch="${ch.n}"><div class="acc-h" onclick="togAcc(this,${ch.n})"><span class="cn">第${ch.n}章</span><span class="ct">${ch.t}</span><span class="cb">${badge}</span><span class="ar">▶</span></div><div class="acc-b">${body}</div></div>`;
+  });
+  c.innerHTML=h;
+}
+function togAcc(el,n){
+  const s=el.parentElement;const was=s.classList.contains('open');s.classList.toggle('open');
+  if(!was){S.textViews[n]=(S.textViews[n]||0)+1;sv();el.querySelector('.cb').textContent=`閲覧${S.textViews[n]}回`}
+}
+function toggleChk(ch,i,el){
+  if(!S.textChecks[ch])S.textChecks[ch]=[false,false,false];
+  S.textChecks[ch][i]=!S.textChecks[ch][i];
+  el.classList.toggle('done');el.textContent=S.textChecks[ch][i]?'✓':(i+1);
+  document.getElementById('chkCnt'+ch).textContent=`(${S.textChecks[ch].filter(Boolean).length}/3)`;
+  sv();
+}
+function jumpToQ(qid){
+  const q=ALL.find(x=>x.id===qid);if(!q)return;
+  QS.mode='single';QS.questions=[q];QS.idx=0;QS.correct=0;QS.answered=0;QS.startTime=Date.now();
+  switchTab('T-quiz');
+  document.getElementById('qMenu').classList.add('hide');
+  document.getElementById('qPlay').classList.remove('hide');
+  document.getElementById('backBtn').classList.remove('hide');
+  showQ();
+}
+
+function fmtJE(entries){
+  let dr=[],cr=[];
+  entries.forEach(e=>{if(e.dr)dr.push({n:e.dr,a:e.dr_amt});if(e.cr)cr.push({n:e.cr,a:e.cr_amt})});
+  let h='<table><tr><td class="dr-side">';
+  dr.forEach(d=>{h+=`<div style="color:var(--dr-col)">（${d.n}）<span style="float:right">${d.a.toLocaleString()}</span></div>`});
+  h+='</td><td>';
+  cr.forEach(c=>{h+=`<div style="color:var(--cr-col)">（${c.n}）<span style="float:right">${c.a.toLocaleString()}</span></div>`});
+  return h+'</td></tr></table>';
+}
+
+/* ======== 章別進捗パネル（問題解答中に表示） ======== */
+function renderChProgPanel(currentCh){
+  let h='<div class="ch-prog-panel"><h4>📊 章別進捗</h4>';
+  CHAPTERS.forEach(ch=>{
+    const qs=ALL.filter(q=>q.ch===ch.n);
+    if(qs.length===0) return;
+    const done=qs.filter(q=>S.stats[q.id]?.cnt>0).length;
+    const pct=Math.round(done/qs.length*100);
+    const isCurrent=ch.n===currentCh;
+    h+=`<div class="ch-prog-row${isCurrent?' current'}"><span class="ch-lbl">${isCurrent?'▶':''}${ch.n}章</span><div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div><span class="ch-pct">${done}/${qs.length}</span></div>`;
+  });
+  return h+'</div>';
+}
+
+/* QUIZ */
+let QS={mode:'',questions:[],idx:0,correct:0,answered:0,chFilter:new Set(),startTime:0,drRows:2,crRows:2};
+const MODES=[{id:'seq',ico:'📖',lbl:'テキスト順',sub:'章の順番'},{id:'shuf',ico:'🔀',lbl:'シャッフル',sub:'ランダム'},{id:'weak',ico:'💪',lbl:'苦手復習',sub:'間違えた問題'},{id:'mini',ico:'📝',lbl:'ミニテスト',sub:'25問テスト'},{id:'srs',ico:'🧠',lbl:'忘却曲線',sub:'間隔反復法'},{id:'daily',ico:'📅',lbl:'デイリー',sub:'毎日の復習'}];
+
+function renderQMenu(){
+  const cf=document.getElementById('chF');
+  let fh='<span class="ch-tag act" onclick="togCF(0,this)">全章</span>';
+  CHAPTERS.forEach(ch=>{const c=ALL.filter(q=>q.ch===ch.n).length;if(c>0)fh+=`<span class="ch-tag" onclick="togCF(${ch.n},this)">${ch.n}章</span>`});
+  cf.innerHTML=fh;
+  document.getElementById('mGrid').innerHTML=MODES.map(m=>{
+    const isResume=S.resume&&S.resume.mode===m.id;
+    const badge=isResume?`<span class="resume-badge">続き</span>`:'';
+    return `<div class="mode-btn" onclick="startQ('${m.id}')">${badge}<div class="ico">${m.ico}</div><div class="lbl">${m.lbl}</div><div class="sub">${m.sub}</div></div>`;
+  }).join('');
+  renderResumePanel();
+}
+
+function renderResumePanel(){
+  const p=document.getElementById('resumePanel');
+  if(S.resume&&S.resume.qids&&S.resume.qids.length){
+    const mode=MODES.find(x=>x.id===S.resume.mode);
+    const remaining=S.resume.qids.length-S.resume.idx;
+    p.classList.remove('hide');
+    p.innerHTML=`<div class="crd" style="background:linear-gradient(135deg,#fff4e6,#ffeacc);border:2px solid #f39c12"><h3 style="color:#d68910">⏸️ 中断中の問題があります</h3>
+<div style="font-size:.82em;margin:4px 0"><b>${mode?mode.lbl:''}</b>モード ― ${S.resume.idx+1}/${S.resume.qids.length}問目から（残り${remaining}問）</div>
+<div style="display:flex;gap:6px;margin-top:8px">
+<button class="btn btn-pri btn-sm" style="flex:1" onclick="resumeQuiz()">▶ 続きから再開</button>
+<button class="btn btn-out btn-sm" onclick="clearResume()">✕ 破棄</button>
+</div></div>`;
+  }else{p.classList.add('hide')}
+}
+function resumeQuiz(){
+  if(!S.resume)return;
+  QS.mode=S.resume.mode;
+  QS.questions=S.resume.qids.map(id=>ALL.find(q=>q.id===id)).filter(Boolean);
+  QS.idx=S.resume.idx;QS.correct=S.resume.correct;QS.answered=S.resume.answered;
+  QS.startTime=Date.now();
+  S.resume=null;sv();
+  document.getElementById('qMenu').classList.add('hide');
+  document.getElementById('qPlay').classList.remove('hide');
+  document.getElementById('backBtn').classList.remove('hide');
+  showQ();
+}
+function clearResume(){if(confirm('中断中の問題を破棄しますか？')){S.resume=null;sv();renderResumePanel();renderQMenu()}}
+
+function togCF(n,el){
+  if(n===0){QS.chFilter.clear();document.querySelectorAll('.ch-tag').forEach(t=>t.classList.remove('act'));el.classList.add('act');return}
+  document.querySelector('.ch-tag').classList.remove('act');el.classList.toggle('act');
+  if(QS.chFilter.has(n))QS.chFilter.delete(n);else QS.chFilter.add(n);
+  if(QS.chFilter.size===0)document.querySelector('.ch-tag').classList.add('act');
+}
+function getFQ(){return QS.chFilter.size===0?[...ALL]:ALL.filter(q=>QS.chFilter.has(q.ch))}
+
+function startQ(mode){
+  QS.mode=mode;let qs=getFQ();
+  if(qs.length===0){alert('選択した章に問題がありません');return}
+  switch(mode){
+    case'seq':break;
+    case'shuf':qs=shuf(qs);break;
+    case'weak':qs=qs.filter(q=>{const s=S.stats[q.id];return s&&s.cnt>0&&(s.ok/s.cnt)<0.6});if(!qs.length){alert('苦手問題がまだありません');return}break;
+    case'mini':qs=shuf(qs).slice(0,Math.min(25,qs.length));break;
+    case'srs':{const now=Date.now();qs=qs.filter(q=>{const s=S.stats[q.id];if(!s||!s.srs_next)return true;return now>=s.srs_next}).sort((a,b)=>(S.stats[a.id]?.srs_next||0)-(S.stats[b.id]?.srs_next||0)).slice(0,20);if(!qs.length){alert('復習すべき問題はありません');return}break}
+    case'daily':{const now=Date.now();const rv=qs.filter(q=>{const s=S.stats[q.id];return s&&s.srs_next&&now>=s.srs_next}).slice(0,10);const nw=qs.filter(q=>!S.stats[q.id]||!S.stats[q.id].cnt).slice(0,5);qs=[...rv,...nw];if(!qs.length){alert('今日の学習は完了です！');return}break}
+  }
+  QS.questions=qs;QS.idx=0;QS.correct=0;QS.answered=0;QS.startTime=Date.now();
+  document.getElementById('qMenu').classList.add('hide');document.getElementById('qPlay').classList.remove('hide');document.getElementById('backBtn').classList.remove('hide');
+  showQ();
+}
+
+function renderPickList(){
+  const sel=parseInt(document.getElementById('pickChSel').value||0);
+  const list=sel===0?ALL:ALL.filter(q=>q.ch===sel);
+  let h='';
+  list.forEach(q=>{
+    const s=S.stats[q.id];
+    const icon=s?.cnt>0?(s.ok/s.cnt>=0.8?'🟢':s.ok/s.cnt>=0.5?'🟡':'🔴'):'⚪';
+    const rate=s?.cnt>0?Math.round(s.ok/s.cnt*100)+'%':'—';
+    const wsCls=q.type==='worksheet'?' type-ws':'';
+    const wsTag=q.type==='worksheet'?' 📊':'';
+    h+=`<div class="q-pick-item${wsCls}" onclick="jumpToQ(${q.id})">
+<span class="status-icon">${icon}</span>
+<div style="flex:1;min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">第${q.ch}章 CASE${q.case}${wsTag}: ${q.title}</div></div>
+<span class="stat-txt">${s?`${s.ok}/${s.cnt} (${rate})`:'未挑戦'}</span>
+</div>`;
+  });
+  document.getElementById('pickList').innerHTML=h||'<p style="padding:16px;text-align:center;color:var(--dim);font-size:.8em">この章の問題はありません</p>';
+}
+
+function showQ(){
+  const q=QS.questions[QS.idx];if(!q){showRes();return}
+  if(q.type==='worksheet'){showWorksheetQ(q);return}
+  const tot=QS.questions.length;const pct=Math.round((QS.idx+1)/tot*100);
+  QS.drRows=Math.max(q.entries.filter(e=>e.dr).length+1,2);
+  QS.crRows=Math.max(q.entries.filter(e=>e.cr).length+1,2);
+  renderQBody(q,tot,pct);
+  if(S.settings.tts)speak(q.q);
+}
+
+function renderQBody(q,tot,pct){
+  const opts=ACCT_NAMES.map(a=>`<option value="${a}">${a}</option>`).join('');
+  let drH='',crH='';
+  for(let i=0;i<QS.drRows;i++)drH+=`<div class="je-row"><select id="da${i}"><option value="">勘定科目を選択</option>${opts}</select><input type="number" id="dv${i}" placeholder="金額" inputmode="numeric"></div>`;
+  for(let i=0;i<QS.crRows;i++)crH+=`<div class="je-row"><select id="ca${i}"><option value="">勘定科目を選択</option>${opts}</select><input type="number" id="cv${i}" placeholder="金額" inputmode="numeric"></div>`;
+  const memo=S.stats[q.id]?.memo||'';
+  const st=S.stats[q.id];
+  const statInfo=st?`回答${st.cnt}回 / 正解${st.ok}回 / 正答率${Math.round(st.ok/st.cnt*100)}%`:'初挑戦';
+  document.getElementById('qPlay').innerHTML=`<div class="fade-in">
+<div class="q-header"><span class="q-num">📝 問${QS.idx+1} / ${tot}</span><span class="q-progress-txt">第${q.ch}章 CASE${q.case}</span></div>
+<div class="prog" style="margin:0 0 8px 0"><div class="prog-fill" style="width:${pct}%"></div></div>
+<div style="font-size:.7em;color:var(--dim);margin-bottom:8px">📊 ${statInfo}</div>
+${renderChProgPanel(q.ch)}
+<div class="q-text">${q.q}</div>
+<div class="je-section">
+<div class="je-label dr-label"><span>【借方】（左側）</span>
+<div class="row-ctrl"><button onclick="modRow('dr',-1)" title="行を減らす">−</button><button onclick="modRow('dr',1)" title="行を追加">＋</button></div></div>
+<div class="je-rows">${drH}</div></div>
+<div class="je-section">
+<div class="je-label cr-label"><span>【貸方】（右側）</span>
+<div class="row-ctrl"><button onclick="modRow('cr',-1)" title="行を減らす">−</button><button onclick="modRow('cr',1)" title="行を追加">＋</button></div></div>
+<div class="je-rows">${crH}</div></div>
+<button class="btn btn-pri btn-block" onclick="chkAns()" style="margin-top:10px;padding:12px">解答する</button>
+<div id="ansR"></div>
+<div style="margin-top:8px"><textarea class="memo-area" style="min-height:36px" placeholder="この問題のメモ…" id="qM" oninput="sqm(${q.id})">${memo}</textarea></div>
+</div>`;
+}
+
+function modRow(side,delta){
+  const q=QS.questions[QS.idx];
+  const saved={dr:[],cr:[]};
+  for(let i=0;i<QS.drRows;i++){const a=document.getElementById('da'+i),v=document.getElementById('dv'+i);if(a)saved.dr.push({a:a.value,v:v.value})}
+  for(let i=0;i<QS.crRows;i++){const a=document.getElementById('ca'+i),v=document.getElementById('cv'+i);if(a)saved.cr.push({a:a.value,v:v.value})}
+  if(side==='dr'){QS.drRows=Math.max(1,Math.min(6,QS.drRows+delta))}else{QS.crRows=Math.max(1,Math.min(6,QS.crRows+delta))}
+  const tot=QS.questions.length;const pct=Math.round((QS.idx+1)/tot*100);
+  renderQBody(q,tot,pct);
+  saved.dr.forEach((s,i)=>{const a=document.getElementById('da'+i),v=document.getElementById('dv'+i);if(a){a.value=s.a;v.value=s.v}});
+  saved.cr.forEach((s,i)=>{const a=document.getElementById('ca'+i),v=document.getElementById('cv'+i);if(a){a.value=s.a;v.value=s.v}});
+}
+
+function chkAns(){
+  const q=QS.questions[QS.idx];let uDr=[],uCr=[];
+  for(let i=0;i<10;i++){const a=document.getElementById('da'+i);if(!a)break;if(a.value)uDr.push({name:a.value,amt:parseInt(document.getElementById('dv'+i).value)||0})}
+  for(let i=0;i<10;i++){const a=document.getElementById('ca'+i);if(!a)break;if(a.value)uCr.push({name:a.value,amt:parseInt(document.getElementById('cv'+i).value)||0})}
+  let eDr=[],eCr=[];
+  q.entries.forEach(e=>{if(e.dr)eDr.push({name:e.dr,amt:e.dr_amt});if(e.cr)eCr.push({name:e.cr,amt:e.cr_amt})});
+  const ok=arrM(uDr,eDr)&&arrM(uCr,eCr);
+  recordResult(q,ok);showAnsResult(q,ok);
+}
+
+function recordResult(q,ok){
+  if(!S.stats[q.id])S.stats[q.id]={cnt:0,ok:0,last:0,memo:'',srs_interval:1,srs_next:0};
+  const st=S.stats[q.id];st.cnt++;st.last=Date.now();
+  if(ok){st.ok++;st.srs_interval=Math.min(st.srs_interval*2.5,30);QS.correct++}else{st.srs_interval=1}
+  st.srs_next=Date.now()+st.srs_interval*86400000;QS.answered++;
+  const td=new Date().toISOString().slice(0,10);
+  if(!S.daily[td])S.daily[td]={cnt:0,ok:0};S.daily[td].cnt++;if(ok)S.daily[td].ok++;
+  sv();
+}
+
+function showAnsResult(q,ok){
+  const cls=ok?'ans-ok':'ans-ng';const icon=ok?'⭕ 正解！':'❌ 不正解';
+  let h=`<div class="ans-box ${cls}" style="margin-top:10px"><div style="font-weight:700;font-size:1em;margin-bottom:6px">${icon}</div>`;
+  if(q.type==='worksheet'){
+    h+=`<div style="font-size:.82em;font-weight:600;margin-bottom:4px">正解の値：</div>`;
+    h+=`<div style="font-size:.8em;line-height:1.7">`;
+    q.template.rows.forEach(r=>{h+=`${r.label}: ${Math.abs(r.answer).toLocaleString()}${r.answer<0?' (控除)':''}<br>`});
+    h+=`</div>`;
+  }else{
+    h+=`<div style="font-size:.82em;font-weight:600;margin-bottom:4px">正しい仕訳：</div>`;
+    h+=`<div class="je-display">${fmtJE(q.entries)}</div>`;
+  }
+  h+=`<div class="exp-box">💡 ${q.exp}</div></div>`;
+  h+=`<button class="btn btn-pri btn-block" onclick="nxtQ()" style="margin-top:8px;padding:12px">${QS.idx<QS.questions.length-1?'次の問題 ▶':'結果を見る 📊'}</button>`;
+  document.getElementById('ansR').innerHTML=h;
+}
+
+function arrM(u,e){if(u.length!==e.length)return false;const s=(a,b)=>a.name.localeCompare(b.name,'ja')||a.amt-b.amt;
+const a=[...u].sort(s),b=[...e].sort(s);return a.every((x,i)=>x.name===b[i].name&&x.amt===b[i].amt)}
+function nxtQ(){QS.idx++;showQ()}
+
+function showWorksheetQ(q){
+  const tot=QS.questions.length;const pct=Math.round((QS.idx+1)/tot*100);
+  const memo=S.stats[q.id]?.memo||'';
+  const st=S.stats[q.id];
+  const statInfo=st?`回答${st.cnt}回 / 正解${st.ok}回 / 正答率${Math.round(st.ok/st.cnt*100)}%`:'初挑戦';
+  let rows='';
+  q.template.rows.forEach((r,i)=>{
+    rows+=`<tr><td>${r.label}</td><td><span class="ws-side side-${r.side}">${r.side}</span></td><td class="num-col"><input type="number" class="ws-input" id="ws${i}" placeholder="金額" inputmode="numeric"></td></tr>`;
+  });
+  document.getElementById('qPlay').innerHTML=`<div class="fade-in">
+<div class="q-header"><span class="q-num">📝 問${QS.idx+1} / ${tot}</span><span class="q-progress-txt">第${q.ch}章 CASE${q.case}</span></div>
+<div class="prog" style="margin:0 0 8px 0"><div class="prog-fill" style="width:${pct}%"></div></div>
+<div style="font-size:.7em;color:var(--dim);margin-bottom:8px">📊 ${statInfo}</div>
+${renderChProgPanel(q.ch)}
+<div class="q-text">${q.q}</div>
+<div style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:10px;margin:8px 0">
+<h4 style="text-align:center;font-size:.9em;margin-bottom:4px">${q.template.title}</h4>
+<p style="text-align:center;font-size:.72em;color:var(--dim);margin-bottom:8px">${q.template.subtitle||''}</p>
+<table class="ws-table"><thead><tr><th>科目</th><th>区分</th><th class="num-col">金額</th></tr></thead>
+<tbody>${rows}</tbody></table>
+<p style="font-size:.7em;color:var(--dim);text-align:center;margin-top:6px">※ 空欄に金額を入力してください</p>
+</div>
+<button class="btn btn-pri btn-block" onclick="chkWsAns()" style="margin-top:10px;padding:12px">解答する</button>
+<div id="ansR"></div>
+<div style="margin-top:8px"><textarea class="memo-area" style="min-height:36px" placeholder="この問題のメモ…" id="qM" oninput="sqm(${q.id})">${memo}</textarea></div>
+</div>`;
+}
+
+function chkWsAns(){
+  const q=QS.questions[QS.idx];
+  let allOk=true;
+  q.template.rows.forEach((r,i)=>{
+    const v=parseInt(document.getElementById('ws'+i).value)||0;
+    const expected=Math.abs(r.answer);
+    if(v!==expected)allOk=false;
+  });
+  recordResult(q,allOk);showAnsResult(q,allOk);
+}
+
+function showRes(){
+  S.resume=null;sv();
+  const pct=QS.answered>0?Math.round(QS.correct/QS.answered*100):0;
+  const el=Math.round((Date.now()-QS.startTime)/1000);
+  const m=Math.floor(el/60),s=el%60;
+  document.getElementById('qPlay').innerHTML=`<div class="fade-in" style="text-align:center;padding:16px">
+<div style="font-size:2.5em;margin-bottom:8px">${pct>=80?'🎉':pct>=60?'👍':'💪'}</div>
+<h2 style="font-size:1.1em">テスト結果</h2>
+<div class="stat-grid" style="margin:12px 0">
+<div class="stat-box"><div class="num">${pct}%</div><div class="lbl">正答率</div></div>
+<div class="stat-box"><div class="num">${QS.correct}/${QS.answered}</div><div class="lbl">正解数</div></div>
+<div class="stat-box"><div class="num">${m}:${String(s).padStart(2,'0')}</div><div class="lbl">所要時間</div></div>
+<div class="stat-box"><div class="num">${MODES.find(x=>x.id===QS.mode)?.lbl||'-'}</div><div class="lbl">モード</div></div>
+</div>
+<button class="btn btn-pri btn-block" onclick="switchTab('T-quiz')">問題選択に戻る</button></div>`;
+}
+
+/* REF */
+function renderRef(){
+  const cats=[
+    {cat:'資産',cls:'c-asset',items:[{n:'現金',d:'通貨・他人振出小切手等',p:'借↑貸↓'},{n:'小口現金',d:'少額支払用',p:'借↑貸↓'},{n:'当座預金',d:'小切手用預金',p:'借↑貸↓'},{n:'普通預金',d:'一般銀行預金',p:'借↑貸↓'},{n:'定期預金',d:'一定期間固定',p:'借↑貸↓'},{n:'受取手形',d:'手形受取時',p:'借↑貸↓'},{n:'売掛金',d:'掛売上の債権',p:'借↑貸↓'},{n:'クレジット売掛金',d:'カード払売上',p:'借↑貸↓'},{n:'電子記録債権',d:'電子債権',p:'借↑貸↓'},{n:'貸付金',d:'貸付時',p:'借↑貸↓'},{n:'手形貸付金',d:'手形付貸付',p:'借↑貸↓'},{n:'未収入金',d:'商品以外の未収',p:'借↑貸↓'},{n:'前払金',d:'内金支払',p:'借↑貸↓'},{n:'仮払金',d:'概算前渡',p:'借↑貸↓'},{n:'仮払法人税等',d:'中間納付額',p:'借↑貸↓'},{n:'仮払消費税',d:'支払消費税',p:'借↑貸↓'},{n:'立替金',d:'立替払',p:'借↑貸↓'},{n:'従業員立替金',d:'従業員分立替',p:'借↑貸↓'},{n:'受取商品券',d:'商品券受取',p:'借↑貸↓'},{n:'差入保証金',d:'敷金・保証金',p:'借↑貸↓'},{n:'貯蔵品',d:'未使用切手等',p:'借↑貸↓'},{n:'商品',d:'繰越商品',p:'借↑貸↓'},{n:'建物',d:'店舗・事務所',p:'借↑貸↓'},{n:'備品',d:'机・PC等',p:'借↑貸↓'},{n:'車両運搬具',d:'車・トラック',p:'借↑貸↓'},{n:'土地',d:'敷地',p:'借↑貸↓'}]},
+    {cat:'負債',cls:'c-liab',items:[{n:'支払手形',d:'手形振出時',p:'借↓貸↑'},{n:'買掛金',d:'掛仕入の債務',p:'借↓貸↑'},{n:'電子記録債務',d:'電子債務',p:'借↓貸↑'},{n:'借入金',d:'借入時',p:'借↓貸↑'},{n:'手形借入金',d:'手形付借入',p:'借↓貸↑'},{n:'未払金',d:'商品以外の未払',p:'借↓貸↑'},{n:'前受金',d:'内金受取',p:'借↓貸↑'},{n:'仮受金',d:'内容不明入金',p:'借↓貸↑'},{n:'預り金',d:'源泉税等預り',p:'借↓貸↑'},{n:'未払配当金',d:'未払配当',p:'借↓貸↑'},{n:'当座借越',d:'借越残高',p:'借↓貸↑'},{n:'未払法人税等',d:'法人税未払',p:'借↓貸↑'},{n:'仮受消費税',d:'受取消費税',p:'借↓貸↑'},{n:'未払消費税',d:'納付すべき消費税',p:'借↓貸↑'},{n:'貸倒引当金',d:'資産のマイナス',p:'借↓貸↑'},{n:'減価償却累計額',d:'資産のマイナス',p:'借↓貸↑'}]},
+    {cat:'純資産',cls:'c-eq',items:[{n:'資本金',d:'株式発行の元手',p:'借↓貸↑'},{n:'利益準備金',d:'法定積立',p:'借↓貸↑'},{n:'繰越利益剰余金',d:'利益の蓄積',p:'借↓貸↑'}]},
+    {cat:'収益',cls:'c-rev',items:[{n:'売上',d:'商品売上',p:'借↓貸↑'},{n:'受取利息',d:'利息受取',p:'借↓貸↑'},{n:'受取手数料',d:'手数料受取',p:'借↓貸↑'},{n:'受取家賃',d:'家賃受取',p:'借↓貸↑'},{n:'受取地代',d:'地代受取',p:'借↓貸↑'},{n:'雑益',d:'原因不明の超過等',p:'借↓貸↑'},{n:'償却債権取立益',d:'貸倒回収',p:'借↓貸↑'},{n:'固定資産売却益',d:'売却益',p:'借↓貸↑'},{n:'貸倒引当金戻入',d:'引当金超過分',p:'借↓貸↑'}]},
+    {cat:'費用',cls:'c-exp',items:[{n:'仕入',d:'商品仕入',p:'借↑貸↓'},{n:'給料',d:'給与支払',p:'借↑貸↓'},{n:'法定福利費',d:'社保の会社負担',p:'借↑貸↓'},{n:'旅費交通費',d:'交通費・出張費',p:'借↑貸↓'},{n:'通信費',d:'切手・電話',p:'借↑貸↓'},{n:'消耗品費',d:'文房具等',p:'借↑貸↓'},{n:'水道光熱費',d:'電気・ガス・水道',p:'借↑貸↓'},{n:'支払家賃',d:'家賃支払',p:'借↑貸↓'},{n:'支払地代',d:'地代支払',p:'借↑貸↓'},{n:'支払利息',d:'利息支払',p:'借↑貸↓'},{n:'支払手数料',d:'手数料支払',p:'借↑貸↓'},{n:'保険料',d:'保険料支払',p:'借↑貸↓'},{n:'修繕費',d:'修繕費用',p:'借↑貸↓'},{n:'租税公課',d:'固定資産税等',p:'借↑貸↓'},{n:'広告宣伝費',d:'広告費',p:'借↑貸↓'},{n:'雑費',d:'少額その他',p:'借↑貸↓'},{n:'雑損',d:'原因不明の不足等',p:'借↑貸↓'},{n:'貸倒損失',d:'債権の貸倒',p:'借↑貸↓'},{n:'貸倒引当金繰入',d:'引当金設定',p:'借↑貸↓'},{n:'減価償却費',d:'償却費計上',p:'借↑貸↓'},{n:'固定資産売却損',d:'売却損',p:'借↑貸↓'},{n:'発送費',d:'発送費用',p:'借↑貸↓'},{n:'法人税、住民税及び事業税',d:'法人税等',p:'借↑貸↓'}]}
+  ];
+  let h='';
+  cats.forEach(c=>{h+=`<div class="acct-cat ${c.cls}"><h4>${c.cat}（${c.items.length}）</h4>`;
+  c.items.forEach(a=>{h+=`<div class="acct-item"><div><b>${a.n}</b> <span style="font-size:.72em;color:var(--dim)">${a.d}</span></div><div style="font-size:.72em">${a.p}</div></div>`});h+='</div>'});
+  document.getElementById('acctRef').innerHTML=h;
+  document.getElementById('ptnRef').innerHTML=`
+<div class="ptn-card"><h4>🛒 商品売買（三分法）</h4><div class="ptn-je">仕入時：（仕入）×× ／（現金・買掛金）××</div><div class="ptn-je">売上時：（現金・売掛金）×× ／（売上）××</div></div>
+<div class="ptn-card"><h4>📉 減価償却（間接法）</h4><div class="ptn-je">決算時：（減価償却費）×× ／（減価償却累計額）××</div><div class="ptn-je">定額法：（取得原価−残存価額）÷ 耐用年数</div></div>
+<div class="ptn-card"><h4>🛡️ 貸倒引当金（差額補充法）</h4><div class="ptn-je">設定：（貸倒引当金繰入）×× ／（貸倒引当金）××</div><div class="ptn-je">設定額＝期末残高×設定率−既存残高</div></div>
+<div class="ptn-card"><h4>💰 消費税（税抜方式）</h4><div class="ptn-je">支払時：（仕入）×× ／（現金）×× ＋（仮払消費税）××</div><div class="ptn-je">受取時：（現金）×× ／（売上）×× ＋（仮受消費税）××</div><div class="ptn-je">決算時：（仮受消費税）×× ／（仮払消費税）×× ＋（未払消費税）××</div></div>
+<div class="ptn-card"><h4>📅 経過勘定項目</h4><div class="ptn-je">前払：（前払○○）×× ／（支払○○）××</div><div class="ptn-je">未払：（支払○○）×× ／（未払○○）××</div><div class="ptn-je">前受：（受取○○）×× ／（前受○○）××</div><div class="ptn-je">未収：（未収○○）×× ／（受取○○）××</div></div>`;
+}
+
+/* MEMO */
+function toggleMemo(){
+  const o=document.getElementById('memoOL');o.classList.toggle('hide');
+  if(!o.classList.contains('hide')){o.style.display='flex';renderQMemos()}
+  else o.style.display='';
+}
+function saveMemo(){S.memo=document.getElementById('memoText').value;sv()}
+function sqm(id){
+  if(!S.stats[id])S.stats[id]={cnt:0,ok:0,last:0,memo:'',srs_interval:1,srs_next:0};
+  S.stats[id].memo=document.getElementById('qM')?.value||'';sv();
+}
+function renderQMemos(){
+  const el=document.getElementById('qMemoList');
+  const memos=Object.entries(S.stats).filter(([k,v])=>v.memo).map(([k,v])=>{const q=ALL.find(x=>x.id==k);return q?{q,memo:v.memo}:null}).filter(Boolean);
+  if(!memos.length){el.innerHTML='<p style="font-size:.75em;color:var(--dim)">問題メモはまだありません</p>';return}
+  el.innerHTML='<div style="font-size:.8em;font-weight:600;margin-bottom:4px">📌 問題別メモ（タップで問題へ）</div>'+memos.map(m=>
+    `<div style="padding:8px;border-bottom:1px solid var(--bdr);font-size:.78em;cursor:pointer;border-radius:4px" onclick="toggleMemo();jumpToQ(${m.q.id})"><div style="display:flex;justify-content:space-between;align-items:center"><b>第${m.q.ch}章 CASE${m.q.case}: ${m.q.title}</b><span style="font-size:.85em;color:var(--pri)">▶</span></div><div style="color:var(--dim);margin-top:2px">${m.memo}</div></div>`
+  ).join('');
+}
+function saveGoal(){S.settings.goalCount=parseInt(document.getElementById('gC').value)||10;S.settings.goalRate=parseInt(document.getElementById('gR').value)||80;sv()}
+
+/* STATS */
+function renderStats(){
+  const tQ=ALL.length,att=Object.keys(S.stats).filter(k=>S.stats[k].cnt>0).length;
+  const tA=Object.values(S.stats).reduce((s,v)=>s+v.cnt,0);
+  const tO=Object.values(S.stats).reduce((s,v)=>s+v.ok,0);
+  const pct=tA>0?Math.round(tO/tA*100):0;
+  const tvCnt=Object.keys(S.textViews).length;
+  const chkCnt=Object.values(S.textChecks||{}).reduce((s,a)=>s+a.filter(Boolean).length,0);
+  document.getElementById('sGrid').innerHTML=`
+<div class="stat-box"><div class="num">${att}/${tQ}</div><div class="lbl">回答済み</div></div>
+<div class="stat-box"><div class="num">${pct}%</div><div class="lbl">通算正答率</div></div>
+<div class="stat-box"><div class="num">${tA}</div><div class="lbl">総回答数</div></div>
+<div class="stat-box"><div class="num">${tvCnt}/19</div><div class="lbl">テキスト閲覧</div></div>
+<div class="stat-box"><div class="num">${chkCnt}/57</div><div class="lbl">理解チェック</div></div>
+<div class="stat-box"><div class="num">${Object.keys(S.daily).length}</div><div class="lbl">学習日数</div></div>`;
+  const now=new Date();let ch='';
+  ['日','月','火','水','木','金','土'].forEach(d=>{ch+=`<div style="font-size:.55em;text-align:center;color:var(--dim)">${d}</div>`});
+  const st=new Date(now.getFullYear(),now.getMonth(),1);
+  for(let i=0;i<st.getDay();i++)ch+='<div></div>';
+  for(let d=1;d<=31;d++){const dt=new Date(now.getFullYear(),now.getMonth(),d);if(dt.getMonth()!==now.getMonth())break;
+  const k=dt.toISOString().slice(0,10);const dy=S.daily[k];
+  const bg=dy?(dy.ok/dy.cnt>=0.8?'var(--acc2)':'var(--pri)'):'var(--bdr)';const op=dy?1:0.3;
+  ch+=`<div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:3px;background:${bg};opacity:${op};font-size:.65em;color:#fff">${d}</div>`}
+  document.getElementById('calG').innerHTML=ch;
+  const weakQs=Object.entries(S.stats).filter(([k,v])=>v.cnt>=2&&v.ok/v.cnt<0.7).map(([k,v])=>{const q=ALL.find(x=>x.id==k);return q?{q,rate:Math.round(v.ok/v.cnt*100),cnt:v.cnt,ok:v.ok}:null}).filter(Boolean).sort((a,b)=>a.rate-b.rate).slice(0,10);
+  if(!weakQs.length){document.getElementById('weakRank').innerHTML='<p style="font-size:.78em;color:var(--dim);text-align:center;padding:8px">まだ苦手問題はありません（2回以上回答した問題から抽出）</p>'}
+  else{document.getElementById('weakRank').innerHTML=weakQs.map((w,i)=>`<div class="ch-drill" style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:.8em" onclick="jumpToQ(${w.q.id})">
+<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--acc);font-weight:700">${i+1}位</span><span style="flex:1">第${w.q.ch}章 C${w.q.case}: ${w.q.title}</span></div>
+<div style="font-size:.72em;color:var(--dim);margin-top:2px">正答率${w.rate}% (${w.ok}/${w.cnt}) ▶タップで挑戦</div></div>`).join('')}
+  let cp='';
+  CHAPTERS.forEach(ch=>{
+    const qs=ALL.filter(q=>q.ch===ch.n);
+    const done=qs.filter(q=>S.stats[q.id]?.cnt>0).length;
+    const pct2=qs.length>0?Math.round(done/qs.length*100):0;
+    const chks=S.textChecks[ch.n]||[false,false,false];
+    const chkStr=chks.map(c=>c?'✅':'⬜').join('');
+    cp+=`<div class="ch-drill" style="display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--bdr);font-size:.8em" onclick="showChDet(${ch.n})">
+<span style="width:40px;font-weight:700;color:var(--pri)">第${ch.n}章</span>
+<div style="flex:1"><div class="prog"><div class="prog-fill" style="width:${pct2}%"></div></div></div>
+<span style="font-size:.7em;color:var(--dim)">${done}/${qs.length}</span>
+<span style="font-size:.6em">${chkStr}</span></div>`;
+  });
+  document.getElementById('chProg').innerHTML=cp;
+}
+
+function showChDet(n){
+  const el=document.getElementById('chDetail');el.classList.remove('hide');
+  const ch=CHAPTERS.find(c=>c.n===n);
+  const qs=ALL.filter(q=>q.ch===n);
+  let h=`<h3>第${n}章: ${ch.t}</h3>`;
+  if(qs.length===0){h+=`<p style="font-size:.82em;color:var(--dim)">この章の問題はまだありません</p>`}
+  else{
+    qs.forEach(q=>{
+      const st=S.stats[q.id];
+      const icon=st?.cnt>0?(st.ok/st.cnt>=0.8?'🟢':st.ok/st.cnt>=0.5?'🟡':'🔴'):'⚪';
+      const rate=st?.cnt>0?Math.round(st.ok/st.cnt*100)+'%':'—';
+      h+=`<div style="padding:8px;border-bottom:1px solid var(--bdr);font-size:.82em;cursor:pointer" onclick="jumpToQ(${q.id})">
+<div>${icon} <b>CASE${q.case}</b>: ${q.title} <span style="font-size:.7em;color:var(--dim)">▶タップで挑戦</span></div>
+<div style="font-size:.75em;color:var(--dim);margin:3px 0">${q.q.substring(0,80)}${q.q.length>80?'...':''}</div>`;
+      if(q.type!=='worksheet'){h+=`<div class="je-display" style="font-size:.85em">${fmtJE(q.entries)}</div>`}
+      h+=`<div style="font-size:.7em;color:var(--dim);margin-top:2px">回答${st?.cnt||0}回 / 正解${st?.ok||0}回 / 正答率${rate}${st?.memo?` / 📝${st.memo.substring(0,30)}`:''}</div></div>`;
+    });
+  }
+  h+=`<button class="btn btn-sm btn-out" onclick="document.getElementById('chDetail').classList.add('hide')" style="margin-top:8px">閉じる</button>`;
+  el.innerHTML=h;
+  el.scrollIntoView({behavior:'smooth'});
+}
+
+/* SETTINGS */
+function applySt(){
+  if(S.settings.dark){document.body.classList.add('dark');document.getElementById('dkT').classList.add('on')}
+  document.body.style.fontSize=S.settings.fontSize||'16px';
+  document.getElementById('fsS').value=S.settings.fontSize||'16px';
+  if(S.settings.tts)document.getElementById('ttsT').classList.add('on');
+}
+function toggleDark(){S.settings.dark=!S.settings.dark;document.body.classList.toggle('dark');document.getElementById('dkT').classList.toggle('on');sv()}
+function setFS(v){S.settings.fontSize=v;document.body.style.fontSize=v;sv()}
+function toggleTTS(){S.settings.tts=!S.settings.tts;document.getElementById('ttsT').classList.toggle('on');sv()}
+
+function speak(t){if(!S.settings.tts)return;try{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';speechSynthesis.speak(u)}catch(e){}}
+function shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+
+function exportD(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='boki3_'+new Date().toISOString().slice(0,10)+'.json';a.click()}
+function importD(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{S=JSON.parse(ev.target.result);sv();alert('読み込み完了');location.reload()}catch(e){alert('読み込み失敗')}};r.readAsText(f)}
+function resetD(){if(confirm('全データをリセットしますか？元に戻せません')){localStorage.removeItem(LS);location.reload()}}
+
+init();
+</script></body></html>
